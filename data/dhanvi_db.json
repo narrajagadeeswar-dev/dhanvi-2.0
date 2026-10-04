@@ -1,0 +1,103 @@
+{
+  "users": {
+    "ADMIN": {
+      "id": "ADMIN",
+      "role": "admin",
+      "name": "System Administrator",
+      "password_hash": "0378c32364b8d71eccb35f80235ba154:cc44529f92e6a3bd0948c50044b02708cd98e6584e87768ab6ce15f12c24bde2",
+      "created_at": "2026-10-02T08:40:25.442956+00:00"
+    },
+    "DOC9812": {
+      "id": "DOC9812",
+      "role": "doctor",
+      "name": "Dr. Priya Kapoor",
+      "specialty": "Cardiologist",
+      "hospital": "Apollo Hospitals",
+      "password_hash": "677b490ca9a0247e14ee114a26bc7a8b:7ba9ca872badb9b21eb7c66e134681752f92d4ac6752d88d3954fd26bd76e636",
+      "created_at": "2026-10-02T08:40:25.479794+00:00"
+    },
+    "HOSP001": {
+      "id": "HOSP001",
+      "role": "hospital",
+      "name": "Apollo Hospitals",
+      "license": "NABH-2026-APL-8821",
+      "password_hash": "ee04b26db45a342868ce65684663c5de:d03bf1e1faa55405642cba31427c37f4a4eeb8b84f178712df0dd5835d8e8ba2",
+      "created_at": "2026-10-02T08:40:25.517769+00:00"
+    },
+    "9876543210": {
+      "id": "9876543210",
+      "role": "patient",
+      "name": "Rahul Sharma",
+      "age": 28,
+      "gender": "Male",
+      "blood_group": "O+",
+      "abha_id": "91-4432-8871-0023",
+      "dhanvi_id": "DH-2026-9812-IN",
+      "phone": "9876543210",
+      "email": "rahul@example.com",
+      "allergies": "Penicillin, Sulfa",
+      "conditions": "Type-1 Diabetes",
+      "address": "12, MG Road, Bengaluru, Karnataka - 560001",
+      "guardians": {
+        "g1": {
+          "name": "Sunita Sharma",
+          "relation": "Mother",
+          "phone": "9876543210",
+          "bloodGroup": "B+",
+          "address": "12, MG Road, Bengaluru"
+        },
+        "g2": {
+          "name": "Ajay Sharma",
+          "relation": "Sibling",
+          "phone": "9876543211",
+          "bloodGroup": "A+",
+          "address": "12, MG Road, Bengaluru"
+        }
+      },
+      "password_hash": "a41be9a0462e90eda6d5a3287f3524e4:eba8a348d013eb402abdec37c678e81bc25e5a3c9262439302ef0aa4cb80ffb8",
+      "created_at": "2026-10-02T08:40:25.555862+00:00"
+    },
+    "9811223344": {
+      "id": "9811223344",
+      "role": "patient",
+      "name": "Aarav Patel",
+      "age": 30,
+      "gender": "Male",
+      "blood_group": "B+",
+      "dob": "",
+      "abha_id": "91-4853-4115-1064",
+      "dhanvi_id": "DH-2026-4853-IN",
+      "phone": "9811223344",
+      "email": "",
+      "photo": null,
+      "allergies": "",
+      "conditions": "",
+      "address": "",
+      "guardians": {},
+      "password_hash": "3283b6981dbeb22094701a1933930ff5:e8132d892857e66f01509d2407a3eeb692bf721bfcbaf32031c8bf5d85ba4844",
+      "created_at": "2026-10-02T08:41:57.770367+00:00"
+    }
+  },
+  "active_otps": {},
+  "appointments": [],
+  "audit_logs": [
+    {
+      "timestamp": "2026-10-02T08:41:42.934922+00:00",
+      "action": "LOGIN",
+      "user_id": "DOC9812",
+      "role": "doctor",
+      "status": "SUCCESS",
+      "details": "Doctor login authenticated",
+      "client_ip": "127.0.0.1"
+    },
+    {
+      "timestamp": "2026-10-02T08:41:57.770367+00:00",
+      "action": "REGISTER",
+      "user_id": "9811223344",
+      "role": "patient",
+      "status": "SUCCESS",
+      "details": "New patient registered: Aarav Patel",
+      "client_ip": "127.0.0.1"
+    }
+  ]
+}

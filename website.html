@@ -1,0 +1,2622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DHANVI — Smart Healthcare Access Ecosystem</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3xAmPl3-FaKeKeyN0tReal1234567890"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #020817; color: #f1f5f9; scroll-behavior: smooth; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Gradient text ── */
+    .grad-text {
+      background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 50%, #818cf8 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .grad-text-rose {
+      background: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* ── Glassmorphism card ── */
+    .glass {
+      background: rgba(15,23,42,0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(20,184,166,0.15);
+    }
+    .glass-hover:hover {
+      background: rgba(20,184,166,0.06);
+      border-color: rgba(20,184,166,0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(20,184,166,0.12);
+    }
+
+    /* ── Animations ── */
+    @keyframes float {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-14px); }
+    }
+    @keyframes pulse-glow {
+      0%,100% { box-shadow: 0 0 0 0 rgba(20,184,166,0.4); }
+      50%      { box-shadow: 0 0 0 20px rgba(20,184,166,0); }
+    }
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes fade-up {
+      from { opacity:0; transform: translateY(30px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes ping-ring {
+      0%   { transform: scale(0.9); opacity: 0.8; }
+      50%  { transform: scale(1.08); opacity: 0.25; }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes gradient-shift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes count-up { from { opacity:0; } to { opacity:1; } }
+
+    .float-anim    { animation: float 4s ease-in-out infinite; }
+    .pulse-glow    { animation: pulse-glow 2.5s ease-in-out infinite; }
+    .spin-slow     { animation: spin-slow 18s linear infinite; }
+    .fade-up       { animation: fade-up 0.7s ease forwards; }
+    .ping-ring     { animation: ping-ring 2.5s ease-in-out infinite; }
+    .ticker-anim   { animation: ticker 30s linear infinite; }
+
+    .hero-gradient {
+      background: linear-gradient(-45deg, #020817, #0f172a, #042f2e, #0c1445);
+      background-size: 400% 400%;
+      animation: gradient-shift 12s ease infinite;
+    }
+
+    /* ── Grid lines bg ── */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(20,184,166,0.04) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(20,184,166,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ── Nav ── */
+    .nav-blur {
+      background: rgba(2,8,23,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(20,184,166,0.12);
+    }
+
+    /* ── Stat counter ── */
+    .stat-card {
+      background: linear-gradient(135deg, rgba(20,184,166,0.08), rgba(6,182,212,0.04));
+      border: 1px solid rgba(20,184,166,0.2);
+    }
+
+    /* ── CTA Button ── */
+    .btn-primary {
+      background: linear-gradient(135deg, #14b8a6, #06b6d4);
+      transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+    }
+    .btn-primary::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, #06b6d4, #818cf8);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .btn-primary:hover::after { opacity: 1; }
+    .btn-primary span { position: relative; z-index: 1; }
+
+    .btn-outline {
+      border: 1px solid rgba(20,184,166,0.5);
+      transition: all 0.3s ease;
+    }
+    .btn-outline:hover {
+      background: rgba(20,184,166,0.1);
+      border-color: #14b8a6;
+      box-shadow: 0 0 20px rgba(20,184,166,0.2);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #020817; }
+    ::-webkit-scrollbar-thumb { background: #14b8a6; border-radius: 3px; }
+
+    /* ── Section reveal ── */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Card flip ── */
+    .flip-container { perspective: 1000px; }
+    .flip-card { transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); transform-style: preserve-3d; }
+    .flip-card.flipped { transform: rotateY(180deg); }
+    .flip-front, .flip-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .flip-back { transform: rotateY(180deg); }
+
+    /* ── Ticker ── */
+    .ticker-wrap { overflow: hidden; white-space: nowrap; }
+
+    /* map grid */
+    .map-grid {
+      background-color: #020817;
+      background-image:
+        linear-gradient(rgba(20,184,166,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20,184,166,0.07) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       CLASSIC MEDICAL HEALTHCARE TEMPLATE (DEFAULT)
+       ═══════════════════════════════════════════════════════ */
+    body.theme-classic {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+    }
+    .theme-classic .hero-gradient {
+      background: linear-gradient(180deg, #f0fdfa 0%, #e0f2fe 35%, #f8fafc 100%) !important;
+    }
+    .theme-classic .grid-bg {
+      background-image:
+        linear-gradient(rgba(2, 132, 199, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(2, 132, 199, 0.05) 1px, transparent 1px) !important;
+      background-size: 40px 40px !important;
+    }
+    .theme-classic .nav-blur {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(16px) !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04) !important;
+    }
+    .theme-classic .glass {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
+    }
+    .theme-classic .glass-hover:hover {
+      background: #ffffff !important;
+      border-color: #0284c7 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 12px 30px -4px rgba(2, 132, 199, 0.12) !important;
+    }
+    .theme-classic .grad-text {
+      background: linear-gradient(135deg, #0369a1 0%, #0d9488 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+    }
+    .theme-classic .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0d9488) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25) !important;
+    }
+    .theme-classic .btn-outline {
+      border: 1px solid #cbd5e1 !important;
+      background: #ffffff !important;
+      color: #0f172a !important;
+    }
+    .theme-classic .btn-outline:hover {
+      background: #f1f5f9 !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.1) !important;
+    }
+    .theme-classic .text-white {
+      color: #0f172a !important;
+    }
+    .theme-classic .text-slate-400 {
+      color: #64748b !important;
+    }
+    .theme-classic .text-slate-300 {
+      color: #334155 !important;
+    }
+    .theme-classic .text-slate-200 {
+      color: #1e293b !important;
+    }
+    .theme-classic .text-slate-500 {
+      color: #64748b !important;
+    }
+    .theme-classic .text-slate-600 {
+      color: #475569 !important;
+    }
+    .theme-classic .bg-\[\#020817\] {
+      background-color: #f8fafc !important;
+    }
+    .theme-classic .bg-slate-950\/50,
+    .theme-classic .bg-slate-950\/80,
+    .theme-classic .bg-slate-950 {
+      background-color: #ffffff !important;
+    }
+    .theme-classic .bg-slate-900\/40,
+    .theme-classic .bg-slate-900\/50,
+    .theme-classic .bg-slate-900\/70,
+    .theme-classic .bg-slate-900\/80,
+    .theme-classic .bg-slate-900 {
+      background-color: #f1f5f9 !important;
+    }
+    .theme-classic .bg-slate-800 {
+      background-color: #e2e8f0 !important;
+    }
+    .theme-classic .border-slate-800,
+    .theme-classic .border-slate-800\/60,
+    .theme-classic .border-slate-700 {
+      border-color: #e2e8f0 !important;
+    }
+    .theme-classic .map-grid {
+      background-color: #f8fafc !important;
+      background-image:
+        linear-gradient(rgba(2, 132, 199, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(2, 132, 199, 0.08) 1px, transparent 1px) !important;
+    }
+    .theme-classic .ticker-anim {
+      color: #0369a1 !important;
+    }
+    .theme-classic ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .theme-classic ::-webkit-scrollbar-thumb {
+      background: #0284c7;
+    }
+  </style>
+</head>
+<body class="theme-classic">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ═══════════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════════ */
+const STATS = [
+  { value: "2.1B+", label: "Patients Impacted Globally", icon: "🌍" },
+  { value: "45.11%", label: "OOP Healthcare Spend in India", icon: "💸" },
+  { value: "< 60s", label: "AI Triage Time", icon: "⚡" },
+  { value: "100%", label: "WHO Compliant", icon: "🛡️" },
+];
+
+const FEATURES = [
+  { icon: "🗺️", title: "Live Hospital Discovery", desc: "Find accredited clinics, specialists, and trauma centres near you in real-time with verified ratings and bed availability.", color: "teal" },
+  { icon: "📅", title: "Instant OPD Booking", desc: "Browse live slot availability with upfront consultation fees. Book in 3 taps, get confirmed token instantly.", color: "cyan" },
+  { icon: "🚨", title: "One-Tap Emergency SOS", desc: "Geolocated ambulance dispatch to the nearest trauma centre. Critical seconds saved in the Golden Hour.", color: "rose" },
+  { icon: "🤖", title: "AI Clinical Triage", desc: "Intelligent symptom assessment in under 60 seconds — routes patients to exactly the right specialist.", color: "violet" },
+  { icon: "🪪", title: "Emergency Health ID Card", desc: "Dual-format NFC + QR card. Paramedics access blood group, allergies & contacts — zero internet needed.", color: "amber" },
+  { icon: "🔐", title: "Two-Tier Privacy Vault", desc: "Level 1: Instant life-saving vitals. Level 2: Full EHR unlocked only with patient OTP consent.", color: "emerald" },
+];
+
+const HOW_STEPS = [
+  { num: "01", title: "Set Up Your Profile", desc: "Create your Universal Health Pass with vitals, blood group, allergies, and emergency contacts in minutes.", icon: "👤" },
+  { num: "02", title: "Get Your Smart Card", desc: "Receive your Dual-Format PVC NFC card — physical for your wallet, digital pass for your phone.", icon: "🪪" },
+  { num: "03", title: "AI-Guided Care", desc: "Describe symptoms in plain language. Our AI matches you to verified specialists near you instantly.", icon: "🤖" },
+  { num: "04", title: "Book & Show Up", desc: "Confirm your slot, get your OPD token, and walk in without waiting in queues.", icon: "✅" },
+];
+
+const TESTIMONIALS = [
+  { name: "Dr. Ramesh Patel", role: "Emergency Physician, AIIMS", text: "DHANVI's NFC card gave me instant access to a patient's critical allergy data during a roadside emergency. It saved his life.", avatar: "👨‍⚕️" },
+  { name: "Priya Menon", role: "Patient, Chennai", text: "I booked an appointment with a cardiologist in under 2 minutes. No phone calls, no queues. Absolutely transformative.", avatar: "👩" },
+  { name: "Dr. Anita Sinha", role: "Hospital Administrator, Max", text: "DHANVI reduced our OPD no-show rate by 34% and improved patient flow dramatically within the first month.", avatar: "👩‍💼" },
+];
+
+const COMPLIANCE = [
+  { flag: "🇮🇳", body: "ABDM / ABHA", detail: "Ayushman Bharat Digital Mission aligned" },
+  { flag: "🌐", body: "WHO Digital Health", detail: "Global digital health intervention standards" },
+  { flag: "⚕️", body: "UHI Protocol", detail: "Unified Health Interface interoperability" },
+  { flag: "🔒", body: "AES-256 Encryption", detail: "End-to-end patient data protection" },
+  { flag: "📋", body: "MOHFW Guidelines", detail: "Ministry of Health & Family Welfare compliant" },
+  { flag: "🏥", body: "NHA Standards", detail: "National Health Authority certified ecosystem" },
+];
+
+const TICKER_ITEMS = [
+  "🏥 Apollo Hospitals — 12 ICU beds available",
+  "🚑 Ambulance dispatched — ETA 4 min",
+  "📅 Dr. Priya Kapoor — next slot: 10:30 AM",
+  "✅ OPD Token #47 confirmed",
+  "🩺 AI Triage complete — Cardiologist recommended",
+  "🔒 Level 2 Vault accessed — OTP verified",
+  "💊 Prescription synced to ABHA record",
+  "🏆 Fortis Care — 4.6 ⭐ — 1.4 km away",
+];
+
+const HOSPITALS_DEMO = [
+  { id: 1, name: "Apollo Hospitals", type: "Multi-Specialty & Heart", dist: "0.8 km", beds: 12, rating: 4.8, er: true, color: "#14b8a6", lat: 12.9345, lng: 77.6101 },
+  { id: 2, name: "Fortis Care Centre", type: "Trauma & Critical Care", dist: "1.4 km", beds: 6, rating: 4.6, er: true, color: "#f43f5e", lat: 12.8931, lng: 77.5976 },
+  { id: 3, name: "Max Super Specialty", type: "Oncology & Robotic Hub", dist: "2.1 km", beds: 9, rating: 4.7, er: false, color: "#818cf8", lat: 12.9579, lng: 77.6534 },
+  { id: 4, name: "AIIMS Trauma Centre", type: "Govt Tier-1 Apex Trauma", dist: "3.2 km", beds: 18, rating: 4.9, er: true, color: "#f59e0b", lat: 12.9856, lng: 77.5732 },
+  { id: 5, name: "Manipal Hospitals", type: "Comprehensive & Neuro", dist: "2.8 km", beds: 12, rating: 4.8, er: true, color: "#06b6d4", lat: 12.9592, lng: 77.6444 },
+  { id: 6, name: "Narayana Health City", type: "Cardiac & Organ Transplant", dist: "4.1 km", beds: 14, rating: 4.9, er: true, color: "#10b981", lat: 12.8258, lng: 77.6897 },
+  { id: 7, name: "Yashoda Hospitals", type: "Critical & Neuro Specialty", dist: "1.9 km", beds: 8, rating: 4.7, er: true, color: "#ec4899", lat: 12.9211, lng: 77.6205 },
+  { id: 8, name: "KIMS Hospitals", type: "Transplant & Gastro Hub", dist: "3.5 km", beds: 11, rating: 4.8, er: true, color: "#8b5cf6", lat: 12.9716, lng: 77.5946 },
+  { id: 9, name: "Care Hospitals", type: "Heart & Emergency Trauma", dist: "2.4 km", beds: 7, rating: 4.6, er: true, color: "#ef4444", lat: 12.9432, lng: 77.6012 },
+  { id: 10, name: "Rainbow Children's Hospital", type: "Pediatrics & Neonatal NICU", dist: "1.6 km", beds: 9, rating: 4.9, er: true, color: "#3b82f6", lat: 12.9351, lng: 77.6189 },
+  { id: 11, name: "Aster CMI Hospital", type: "Orthopedics & Spine Care", dist: "3.8 km", beds: 10, rating: 4.7, er: true, color: "#14b8a6", lat: 13.0562, lng: 77.5925 },
+  { id: 12, name: "Medanta - The Medicity", type: "Multi-Super Specialty", dist: "4.5 km", beds: 12, rating: 4.8, er: true, color: "#d97706", lat: 12.9982, lng: 77.6712 },
+];
+
+const DHANVI_MAP_STYLES = [
+  { elementType: "geometry", stylers: [{ color: "#0a1128" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#020817" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#94a3b8" }] },
+  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#14b8a6" }] },
+  { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#38bdf8" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#06282d" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#1e293b" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#0f172a" }] },
+  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#64748b" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#134e4a" }] },
+  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#115e59" }] },
+  { featureType: "transit", elementType: "geometry", stylers: [{ color: "#1e293b" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#022c22" }] },
+  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#0d9488" }] }
+];
+
+window.gm_authFailure = function() {
+  console.warn("[DHANVI] Google Maps Auth Notice: Falling back to Tactical Vector Map.");
+  window.__dhanvi_gm_error = true;
+  window.dispatchEvent(new CustomEvent("dhanvi_gm_fail"));
+};
+
+function GoogleHospitalMap({ hospitals = HOSPITALS_DEMO, selectedHospital, onSelectHospital, height = "360px", showRoute = false, activeAmbulance = false }) {
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+  const routeLineRef = useRef(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [mapFailed, setMapFailed] = useState(false);
+  const [activeType, setActiveType] = useState("roadmap");
+  const userCoords = { lat: 12.9352, lng: 77.6245 };
+
+  useEffect(() => {
+    function onFail() { setMapFailed(true); }
+    window.addEventListener("dhanvi_gm_fail", onFail);
+    return () => window.removeEventListener("dhanvi_gm_fail", onFail);
+  }, []);
+
+  useEffect(() => {
+    if (window.__dhanvi_gm_error) {
+      setMapFailed(true);
+      return;
+    }
+
+    if (!window.google || !window.google.maps || !window.google.maps.Map) {
+      const timer = setTimeout(() => {
+        if (!window.google || !window.google.maps || !window.google.maps.Map) {
+          setMapFailed(true);
+        }
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+
+    try {
+      if (!mapRef.current) return;
+      const isClassic = document.body.classList.contains("theme-classic");
+      const map = new window.google.maps.Map(mapRef.current, {
+        center: { lat: 12.9380, lng: 77.6150 },
+        zoom: 13,
+        styles: isClassic ? null : DHANVI_MAP_STYLES,
+        disableDefaultUI: false,
+        zoomControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+      });
+
+      mapInstanceRef.current = map;
+
+      new window.google.maps.Marker({
+        position: userCoords,
+        map: map,
+        title: "Your Location (DHANVI GPS)",
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: "#0284c7",
+          fillOpacity: 1,
+          strokeColor: "#ffffff",
+          strokeWeight: 2,
+        }
+      });
+
+      markersRef.current.forEach(m => m.marker.setMap(null));
+      markersRef.current = [];
+
+      const created = hospitals.map(h => {
+        const marker = new window.google.maps.Marker({
+          position: { lat: h.lat || 12.9345, lng: h.lng || 77.6101 },
+          map: map,
+          title: h.name,
+          icon: {
+            path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z",
+            fillColor: h.color === "teal" || h.color === "#14b8a6" ? "#0284c7" : h.color === "rose" || h.color === "#f43f5e" ? "#e11d48" : "#7c3aed",
+            fillOpacity: 1,
+            strokeColor: "#ffffff",
+            strokeWeight: 1.5,
+            scale: 1.5,
+            anchor: new window.google.maps.Point(12, 22),
+          }
+        });
+
+        const info = new window.google.maps.InfoWindow({
+          content: '<div style="background:' + (isClassic ? '#ffffff' : '#0f172a') + ';color:' + (isClassic ? '#0f172a' : '#f8fafc') + ';padding:10px 14px;border-radius:12px;font-family:sans-serif;min-width:170px;border:1px solid ' + (isClassic ? '#0284c7' : '#14b8a6') + ';box-shadow:0 4px 16px rgba(0,0,0,0.12);">' +
+            '<div style="font-weight:bold;font-size:14px;color:' + (isClassic ? '#0f172a' : '#fff') + ';">' + h.name + '</div>' +
+            '<div style="font-size:12px;color:' + (isClassic ? '#64748b' : '#94a3b8') + ';margin-top:2px;">' + (h.type || "Hospital") + ' · ' + h.dist + '</div>' +
+            '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;">' +
+              '<span style="background:' + (isClassic ? '#e0f2fe' : 'rgba(20,184,166,0.2)') + ';color:' + (isClassic ? '#0369a1' : '#2dd4bf') + ';padding:2px 8px;border-radius:6px;font-size:11px;font-weight:bold;">🛏️ ' + h.beds + ' Beds</span>' +
+              '<span style="color:#d97706;font-size:11px;font-weight:bold;">★ ' + h.rating + '</span>' +
+            '</div>' +
+          '</div>'
+        });
+
+        marker.addListener("click", () => {
+          info.open(map, marker);
+          if (onSelectHospital) onSelectHospital(h);
+        });
+
+        return { id: h.id, name: h.name, marker, info, data: h };
+      });
+
+      markersRef.current = created;
+      setMapReady(true);
+    } catch (e) {
+      console.warn("Maps init error:", e);
+      setMapFailed(true);
+    }
+  }, [hospitals]);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || !selectedHospital) return;
+    const found = markersRef.current.find(m => (m.id && m.id === selectedHospital.id) || m.name === selectedHospital.name);
+    if (found) {
+      mapInstanceRef.current.panTo({ lat: found.data.lat, lng: found.data.lng });
+      found.info.open(mapInstanceRef.current, found.marker);
+
+      if (showRoute || activeAmbulance) {
+        if (routeLineRef.current) routeLineRef.current.setMap(null);
+        routeLineRef.current = new window.google.maps.Polyline({
+          path: [userCoords, { lat: found.data.lat, lng: found.data.lng }],
+          geodesic: true,
+          strokeColor: activeAmbulance ? "#f43f5e" : "#14b8a6",
+          strokeOpacity: 0.9,
+          strokeWeight: 4,
+          map: mapInstanceRef.current
+        });
+      }
+    }
+  }, [selectedHospital, showRoute, activeAmbulance]);
+
+  function panToUser() {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.panTo(userCoords);
+      mapInstanceRef.current.setZoom(14);
+    }
+  }
+
+  function toggleMapType(type) {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setMapTypeId(type);
+      setActiveType(type);
+    }
+  }
+
+  return (
+    <div className="relative rounded-2xl border border-slate-800 overflow-hidden bg-[#020817] shadow-2xl" style={{ height }}>
+      <div ref={mapRef} className="w-full h-full" style={{ display: mapFailed ? "none" : "block" }}></div>
+
+      {mapFailed && (
+        <div className="absolute inset-0 map-grid flex flex-col justify-between p-4">
+          <div className="flex items-center justify-between z-10">
+            <span className="text-[10px] mono text-teal-400 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-teal-500/30">
+              🛰️ DHANVI TACTICAL GPS RADAR [ ACTIVE ]
+            </span>
+            <span className="text-[10px] mono text-slate-400 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-800">
+              12.9352° N, 77.6245° E
+            </span>
+          </div>
+
+          <div className="relative flex-1 my-2">
+            {hospitals.map((h, i) => {
+              const offsets = [
+                { top: "22%", left: "18%" },
+                { top: "60%", left: "68%" },
+                { top: "18%", left: "75%" },
+                { top: "72%", left: "32%" },
+                { top: "35%", left: "84%" },
+                { top: "78%", left: "72%" },
+                { top: "42%", left: "12%" },
+                { top: "82%", left: "18%" },
+                { top: "14%", left: "46%" },
+                { top: "54%", left: "28%" },
+                { top: "28%", left: "58%" },
+                { top: "68%", left: "50%" }
+              ][i % 12];
+              const isSel = selectedHospital && ((selectedHospital.id && selectedHospital.id === h.id) || selectedHospital.name === h.name);
+              return (
+                <div key={i} onClick={() => onSelectHospital && onSelectHospital(h)}
+                  className="absolute cursor-pointer transition transform hover:scale-125"
+                  style={{ top: offsets.top, left: offsets.left }}>
+                  <div className={"w-4 h-4 rounded-full border-2 border-white shadow-lg " + (isSel ? "ring-4 ring-teal-400 scale-125" : "")}
+                    style={{ background: h.color || "#14b8a6" }}></div>
+                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-bold whitespace-nowrap bg-slate-950/80 px-1.5 py-0.5 rounded border border-slate-800"
+                    style={{ color: h.color || "#14b8a6" }}>
+                    {h.name.split(" ")[0]} ({h.beds}B)
+                  </span>
+                  <div className="absolute inset-0 rounded-full ping-ring" style={{ border: "2px solid " + (h.color || "#14b8a6"), opacity: 0.4 }}></div>
+                </div>
+              );
+            })}
+
+            <div className="absolute" style={{ top: "48%", left: "45%" }}>
+              <div className="w-5 h-5 rounded-full bg-white border-2 border-teal-400 shadow-xl"></div>
+              <div className="absolute inset-0 w-5 h-5 rounded-full bg-teal-400/50 animate-ping"></div>
+              <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-black text-white whitespace-nowrap bg-slate-950/80 px-1.5 rounded">YOU</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
+        <span className="text-[10px] mono font-bold text-slate-300 bg-slate-950/80 border border-teal-500/30 px-2.5 py-1 rounded-lg backdrop-blur-md flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-teal-400 animate-ping inline-block"></span>
+          Google Maps Live API
+        </span>
+        <button onClick={panToUser} className="text-[10px] mono font-bold text-slate-300 bg-slate-900/80 hover:bg-teal-500/20 hover:text-white border border-slate-700 px-2 py-1 rounded-lg backdrop-blur-md transition">
+          🎯 My GPS
+        </button>
+      </div>
+
+      <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-800 backdrop-blur-md">
+        <button onClick={() => toggleMapType("roadmap")}
+          className={"text-[9px] font-bold px-2 py-0.5 rounded transition " + (activeType === "roadmap" ? "bg-teal-500 text-slate-900" : "text-slate-400 hover:text-white")}>
+          Map
+        </button>
+        <button onClick={() => toggleMapType("satellite")}
+          className={"text-[9px] font-bold px-2 py-0.5 rounded transition " + (activeType === "satellite" ? "bg-teal-500 text-slate-900" : "text-slate-400 hover:text-white")}>
+          Satellite
+        </button>
+      </div>
+
+      <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center gap-1.5 overflow-x-auto pb-0.5">
+        {hospitals.map((h, i) => {
+          const isSel = selectedHospital && ((selectedHospital.id && selectedHospital.id === h.id) || selectedHospital.name === h.name);
+          return (
+            <button key={i} onClick={() => onSelectHospital && onSelectHospital(h)}
+              className={"text-left px-3 py-1.5 rounded-xl text-xs backdrop-blur-md border transition shrink-0 " + (isSel ? "bg-teal-500/20 border-teal-400 text-white shadow-lg shadow-teal-500/20" : "bg-slate-950/80 border-slate-800 text-slate-400 hover:text-white")}>
+              <div className="font-bold flex items-center gap-1 text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: h.color || "#14b8a6" }}></span>
+                {h.name}
+              </div>
+              <div className="text-[9px] text-teal-400 font-mono">{h.beds} Beds · {h.dist}</div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   HOOKS
+═══════════════════════════════════════════════════════ */
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════════════ */
+function Navbar({ activePage, setPage, theme, setTheme }) {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const navLinks = [
+    { id: 'home', label: 'Home' },
+    { id: 'features', label: 'Features' },
+    { id: 'demo', label: 'Live Demo' },
+    { id: 'card', label: 'Health ID' },
+    { id: 'compliance', label: 'Compliance' },
+    { id: 'about', label: 'About' },
+  ];
+
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'nav-blur shadow-lg shadow-black/40' : ''}`}>
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
+        <button onClick={() => setPage('home')} className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-600 to-teal-500 flex items-center justify-center font-black text-white text-xl shadow-md">
+            D
+          </div>
+          <div className="text-left">
+            <div className="font-black text-lg text-white tracking-tight leading-none">DHANVI</div>
+            <div className="text-[10px] text-teal-600 tracking-widest uppercase font-bold">Healthcare Ecosystem</div>
+          </div>
+        </button>
+
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-1">
+          {navLinks.map(l => (
+            <button key={l.id} onClick={() => setPage(l.id)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activePage === l.id ? 'text-teal-600 bg-teal-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+              {l.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="hidden md:flex items-center gap-3">
+          {/* Classic / Dark Switcher */}
+          <button onClick={() => setTheme && setTheme(theme === 'classic' ? 'dark' : 'classic')}
+            className="px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5"
+            style={{
+              background: theme === 'classic' ? '#ffffff' : '#1e293b',
+              borderColor: theme === 'classic' ? '#cbd5e1' : '#475569',
+              color: theme === 'classic' ? '#0369a1' : '#38bdf8'
+            }}>
+            {theme === 'classic' ? '🏛️ Classic' : '🌙 Night'}
+          </button>
+          <button onClick={() => window.dispatchEvent(new CustomEvent("open_super_op"))}
+            className="px-3.5 py-1.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 shadow-md shadow-rose-500/20 hover:scale-105 active:scale-95 transition flex items-center gap-1.5 animate-pulse">
+            <span>⚡ SUPER OP (10-Min)</span>
+          </button>
+          <span className="text-xs px-2 py-1 rounded-full bg-teal-900/40 text-teal-300 border border-teal-500/30 mono">WHO Compliant ✓</span>
+          <a href="auth.html"
+            className="btn-outline px-5 py-2 rounded-xl text-sm font-bold text-slate-200">
+            🔑 Login
+          </a>
+          <button onClick={() => setPage('demo')}
+            className="btn-primary px-5 py-2 rounded-xl text-sm font-bold text-slate-900">
+            <span>Try Live Demo →</span>
+          </button>
+        </div>
+
+        {/* Mobile toggle */}
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-slate-400 hover:text-white text-2xl">
+          {mobileOpen ? '✕' : '☰'}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div className="md:hidden nav-blur border-t border-teal-500/10 px-6 py-4 space-y-2">
+          {navLinks.map(l => (
+            <button key={l.id} onClick={() => { setPage(l.id); setMobileOpen(false); }}
+              className={`block w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition ${activePage === l.id ? 'text-teal-400 bg-teal-500/10' : 'text-slate-400 hover:text-white'}`}>
+              {l.label}
+            </button>
+          ))}
+          <a href="auth.html" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-bold text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 transition">
+            🔑 Login / Register
+          </a>
+          <button onClick={() => { setPage('demo'); setMobileOpen(false); }}
+            className="btn-primary w-full py-2.5 rounded-xl text-sm font-bold text-slate-900 mt-2">
+            <span>Try Live Demo →</span>
+          </button>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   TICKER
+═══════════════════════════════════════════════════════ */
+function LiveTicker() {
+  const items = [...TICKER_ITEMS, ...TICKER_ITEMS];
+  return (
+    <div className="bg-slate-950/80 border-y border-teal-500/15 py-2.5 overflow-hidden">
+      <div className="ticker-wrap">
+        <div className="ticker-anim inline-flex gap-12 text-xs mono text-teal-400/80">
+          {items.map((item, i) => (
+            <span key={i} className="inline-flex items-center gap-2 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping inline-block shrink-0"></span>
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════════════════════════ */
+function HomePage({ setPage }) {
+  useScrollReveal();
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [activeHospital, setActiveHospital] = useState(0);
+
+  useEffect(() => {
+    const iv = setInterval(() => setActiveTestimonial(p => (p+1) % TESTIMONIALS.length), 5000);
+    return () => clearInterval(iv);
+  }, []);
+
+  useEffect(() => {
+    const iv = setInterval(() => setActiveHospital(p => (p+1) % HOSPITALS_DEMO.length), 2500);
+    return () => clearInterval(iv);
+  }, []);
+
+  return (
+    <div>
+      {/* ── HERO ── */}
+      <section className="hero-gradient grid-bg min-h-screen flex flex-col items-center justify-center text-center px-6 pt-24 pb-16 relative overflow-hidden">
+        {/* Decorative orbs */}
+        <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-teal-500/8 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/6 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-teal-500/5 rounded-full spin-slow pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-cyan-500/5 rounded-full" style={{ animation:'spin-slow 12s linear infinite reverse' }}></div>
+
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-900/30 border border-teal-500/30 text-teal-300 text-xs font-medium mb-8 fade-up">
+            <span className="w-2 h-2 rounded-full bg-teal-400 animate-ping inline-block"></span>
+            India's First Dual-Format Emergency Health ID — Now Live
+          </div>
+
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none mb-6 fade-up" style={{ animationDelay:'0.1s' }}>
+            <span className="grad-text">DHANVI</span>
+            <br />
+            <span className="text-white text-4xl md:text-5xl lg:text-6xl font-extrabold">Smart Healthcare</span>
+            <br />
+            <span className="text-white text-4xl md:text-5xl lg:text-6xl font-extrabold">for Everyone</span>
+          </h1>
+
+          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-4 fade-up" style={{ animationDelay:'0.2s' }}>
+            Right Care. Right Time. Right Place.
+          </p>
+          <p className="text-slate-500 text-base max-w-xl mx-auto mb-10 fade-up" style={{ animationDelay:'0.25s' }}>
+            Unifying hospital discovery, real-time OPD booking, emergency dispatch, AI triage, and a WHO-compliant digital health identity — in one seamless platform.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-16 fade-up" style={{ animationDelay:'0.3s' }}>
+            <button onClick={() => window.dispatchEvent(new CustomEvent("open_super_op"))}
+              className="px-8 py-3.5 rounded-2xl text-base font-black text-white bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 shadow-xl shadow-rose-500/30 hover:scale-105 active:scale-95 transition flex items-center gap-2 animate-pulse">
+              <span>⚡ SUPER OP (Complete in 10-Min)</span>
+            </button>
+            <button onClick={() => setPage('demo')}
+              className="btn-primary px-8 py-3.5 rounded-2xl text-base font-bold text-slate-900 shadow-xl shadow-teal-500/25">
+              <span>🚀 Try Live Demo</span>
+            </button>
+            <button onClick={() => setPage('card')}
+              className="btn-outline px-8 py-3.5 rounded-2xl text-base font-bold text-white">
+              🪪 View Health ID Card
+            </button>
+          </div>
+
+          {/* Live Stats Strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto fade-up" style={{ animationDelay:'0.4s' }}>
+            {STATS.map((s, i) => (
+              <div key={i} className="stat-card rounded-2xl p-4 text-center">
+                <div className="text-2xl mb-1">{s.icon}</div>
+                <div className="text-2xl font-black grad-text">{s.value}</div>
+                <div className="text-xs text-slate-500 mt-1">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Scroll cue */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600 text-xs">
+          <span>Scroll to explore</span>
+          <div className="w-5 h-8 border border-slate-700 rounded-full flex items-start justify-center pt-1.5">
+            <div className="w-1 h-2 bg-teal-400 rounded-full" style={{ animation:'float 1.5s ease-in-out infinite' }}></div>
+          </div>
+        </div>
+      </section>
+
+      <LiveTicker />
+
+      {/* ── FEATURES ── */}
+      <section id="features" className="py-24 px-6 bg-slate-950 relative">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 reveal">
+            <span className="text-xs uppercase tracking-widest text-teal-400 font-bold mb-4 block">Platform Features</span>
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">Everything healthcare <br/><span className="grad-text">should be</span></h2>
+            <p className="text-slate-400 max-w-xl mx-auto">A single ecosystem that ends the fragmentation, delays, and confusion in accessing quality healthcare.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FEATURES.map((f, i) => {
+              const borderColors = { teal:'border-teal-500/20 hover:border-teal-500/50', cyan:'border-cyan-500/20 hover:border-cyan-500/50', rose:'border-rose-500/20 hover:border-rose-500/50', violet:'border-violet-500/20 hover:border-violet-500/50', amber:'border-amber-500/20 hover:border-amber-500/50', emerald:'border-emerald-500/20 hover:border-emerald-500/50' };
+              const bgColors    = { teal:'bg-teal-500/10 text-teal-400', cyan:'bg-cyan-500/10 text-cyan-400', rose:'bg-rose-500/10 text-rose-400', violet:'bg-violet-500/10 text-violet-400', amber:'bg-amber-500/10 text-amber-400', emerald:'bg-emerald-500/10 text-emerald-400' };
+              return (
+                <div key={i} className={`glass rounded-2xl p-6 glass-hover transition-all duration-300 cursor-default border reveal ${borderColors[f.color]}`} style={{ transitionDelay: `${i*0.08}s` }}>
+                  <div className={`w-12 h-12 rounded-xl ${bgColors[f.color]} flex items-center justify-center text-2xl mb-4`}>{f.icon}</div>
+                  <h3 className="text-white font-bold text-lg mb-2">{f.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
+      <section className="py-24 px-6 bg-gradient-to-b from-slate-950 to-[#020817] relative overflow-hidden">
+        <div className="absolute inset-0 grid-bg opacity-40"></div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16 reveal">
+            <span className="text-xs uppercase tracking-widest text-teal-400 font-bold mb-4 block">Simple Process</span>
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">How <span className="grad-text">DHANVI</span> works</h2>
+            <p className="text-slate-400 max-w-md mx-auto">From setup to seamless healthcare — four simple steps.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {HOW_STEPS.map((s, i) => (
+              <div key={i} className="relative reveal" style={{ transitionDelay:`${i*0.12}s` }}>
+                {i < HOW_STEPS.length-1 && (
+                  <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-teal-500/40 to-transparent z-0"></div>
+                )}
+                <div className="glass rounded-2xl p-6 text-center relative z-10 border border-teal-500/10 hover:border-teal-500/30 transition-all">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/10 border border-teal-500/30 flex items-center justify-center text-2xl mx-auto mb-4 float-anim" style={{ animationDelay:`${i*0.5}s` }}>
+                    {s.icon}
+                  </div>
+                  <div className="mono text-teal-400 text-xs font-bold mb-2">{s.num}</div>
+                  <h3 className="text-white font-bold text-base mb-2">{s.title}</h3>
+                  <p className="text-slate-400 text-xs leading-relaxed">{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── LIVE MAP PREVIEW ── */}
+      <section className="py-24 px-6 bg-[#020817]">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="reveal">
+              <span className="text-xs uppercase tracking-widest text-rose-400 font-bold mb-4 block">Emergency Ready</span>
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Nearest care, <br/><span className="grad-text-rose">in seconds</span></h2>
+              <p className="text-slate-400 mb-8 leading-relaxed">DHANVI's live GPS engine pinpoints verified trauma centres, ICU bed availability, and dispatches the closest ambulance — all from a single tap.</p>
+              <div className="space-y-3 mb-8">
+                {["Real-time ICU & OPD bed counts", "Verified doctor profiles & consultation fees", "One-tap ambulance dispatch", "Route optimization to nearest ER"].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-sm text-slate-300">
+                    <span className="w-5 h-5 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center text-xs shrink-0">✓</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => setPage('demo')}
+                className="btn-primary px-6 py-3 rounded-xl font-bold text-slate-900 text-sm">
+                <span>🗺️ Open Hospital Map →</span>
+              </button>
+            </div>
+
+            {/* Google Maps Live Map Preview */}
+            <div className="reveal">
+              <GoogleHospitalMap
+                hospitals={HOSPITALS_DEMO}
+                selectedHospital={HOSPITALS_DEMO[activeHospital]}
+                onSelectHospital={(h) => {
+                  const idx = HOSPITALS_DEMO.findIndex(x => x.name === h.name);
+                  if (idx >= 0) setActiveHospital(idx);
+                }}
+                height="380px"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="py-24 px-6 bg-slate-950/50">
+        <div className="max-w-4xl mx-auto text-center reveal">
+          <span className="text-xs uppercase tracking-widest text-teal-400 font-bold mb-4 block">Testimonials</span>
+          <h2 className="text-4xl font-black text-white mb-12">Trusted by patients <br/><span className="grad-text">& physicians</span></h2>
+
+          <div className="glass rounded-3xl p-8 md:p-12 border border-teal-500/15 relative overflow-hidden min-h-[220px] flex flex-col items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-500/3 to-cyan-500/3"></div>
+            <div className="text-5xl mb-4">{TESTIMONIALS[activeTestimonial].avatar}</div>
+            <blockquote className="text-slate-300 text-lg md:text-xl italic max-w-2xl mb-6 relative z-10">
+              "{TESTIMONIALS[activeTestimonial].text}"
+            </blockquote>
+            <div className="relative z-10">
+              <div className="font-bold text-white">{TESTIMONIALS[activeTestimonial].name}</div>
+              <div className="text-teal-400 text-sm">{TESTIMONIALS[activeTestimonial].role}</div>
+            </div>
+            <div className="flex gap-2 mt-6 relative z-10">
+              {TESTIMONIALS.map((_,i) => (
+                <button key={i} onClick={() => setActiveTestimonial(i)}
+                  className={`h-1.5 rounded-full transition-all ${i===activeTestimonial ? 'bg-teal-400 w-8' : 'bg-slate-700 w-4'}`}></button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 hero-gradient grid-bg opacity-60"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10 reveal">
+          <h2 className="text-4xl md:text-6xl font-black text-white mb-6">Start your <span className="grad-text">DHANVI</span> journey today</h2>
+          <p className="text-slate-400 text-lg mb-10">Join millions accessing smarter, faster, safer healthcare.</p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <button onClick={() => setPage('demo')}
+              className="btn-primary px-10 py-4 rounded-2xl text-lg font-black text-slate-900 shadow-2xl shadow-teal-500/30">
+              <span>🚀 Launch Live Demo</span>
+            </button>
+            <button onClick={() => setPage('card')}
+              className="btn-outline px-10 py-4 rounded-2xl text-lg font-bold text-white">
+              🪪 Get Health ID Card
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   FEATURES PAGE
+═══════════════════════════════════════════════════════ */
+function FeaturesPage({ setPage }) {
+  useScrollReveal();
+  const details = [
+    { icon:"🗺️", title:"Live Hospital Discovery", color:"teal", points:["GPS-powered real-time search across 10,000+ accredited facilities","Verified doctor profiles, specializations & consultation fees","Live ICU, OPD & general bed availability counts","Distance, ratings & wait-time estimates"], demo:"🏥 4 hospitals found within 3.2 km" },
+    { icon:"📅", title:"Instant OPD Booking", color:"cyan", points:["Browse available slots for today, tomorrow, or any date","Upfront fee transparency — no hidden charges","Instant digital token on confirmation","SMS & ABHA record auto-update"], demo:"✅ Token #47 confirmed for 10:30 AM" },
+    { icon:"🚨", title:"One-Tap Emergency SOS", color:"rose", points:["Single button triggers geolocated ambulance dispatch","Simultaneously alerts nearest trauma centre ER","Shares your NFC/QR health data with the responder","Golden Hour optimization routing"], demo:"🚑 Ambulance En Route · ETA 4 min" },
+    { icon:"🤖", title:"AI Clinical Triage", color:"violet", points:["3-question symptom assessment in natural language","Recommends exact specialist with confidence score","Filters hospital list to matching specialists","Escalates to emergency if critical keywords detected"], demo:"🩺 Cardiologist recommended — 94% match" },
+    { icon:"🪪", title:"Emergency Health ID Card", color:"amber", points:["Dual-format: Physical PVC NFC + Digital Wallet Pass","Level 1: Blood group, allergies, organ donor status — instant scan","Level 2: Full EHR, prescriptions — OTP-locked by patient","Works offline — NFC chip requires zero internet"], demo:"📡 NFC scan complete — 0.4 seconds" },
+    { icon:"🔐", title:"Two-Tier Privacy Vault", color:"emerald", points:["AES-256 end-to-end encryption for all health records","Patient-controlled consent flows for data sharing","Full audit trail of every record access","ABDM & WHO data minimization compliant"], demo:"🔒 Vault secured — patient consent active" },
+  ];
+
+  const colorClasses = {
+    teal:    { bg:"bg-teal-500/10",    text:"text-teal-400",    border:"border-teal-500/30",    badge:"bg-teal-900/40 text-teal-300 border-teal-500/30" },
+    cyan:    { bg:"bg-cyan-500/10",    text:"text-cyan-400",    border:"border-cyan-500/30",    badge:"bg-cyan-900/40 text-cyan-300 border-cyan-500/30" },
+    rose:    { bg:"bg-rose-500/10",    text:"text-rose-400",    border:"border-rose-500/30",    badge:"bg-rose-900/40 text-rose-300 border-rose-500/30" },
+    violet:  { bg:"bg-violet-500/10",  text:"text-violet-400",  border:"border-violet-500/30",  badge:"bg-violet-900/40 text-violet-300 border-violet-500/30" },
+    amber:   { bg:"bg-amber-500/10",   text:"text-amber-400",   border:"border-amber-500/30",   badge:"bg-amber-900/40 text-amber-300 border-amber-500/30" },
+    emerald: { bg:"bg-emerald-500/10", text:"text-emerald-400", border:"border-emerald-500/30", badge:"bg-emerald-900/40 text-emerald-300 border-emerald-500/30" },
+  };
+
+  return (
+    <div className="pt-24 pb-16 px-6 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16 reveal">
+          <span className="text-xs uppercase tracking-widest text-teal-400 font-bold mb-4 block">Full Feature Set</span>
+          <h1 className="text-5xl font-black text-white mb-4">Platform <span className="grad-text">Capabilities</span></h1>
+          <p className="text-slate-400 max-w-xl mx-auto">Every feature designed with one goal: getting you to the right care, faster.</p>
+        </div>
+
+        <div className="space-y-8">
+          {details.map((f, i) => {
+            const c = colorClasses[f.color];
+            return (
+              <div key={i} className={`glass rounded-2xl p-6 md:p-8 border ${c.border} reveal`} style={{ transitionDelay:`${i*0.08}s` }}>
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  <div className={`w-16 h-16 rounded-2xl ${c.bg} flex items-center justify-center text-3xl shrink-0`}>{f.icon}</div>
+                  <div className="flex-1">
+                    <h3 className={`text-xl font-black mb-3 ${c.text}`}>{f.title}</h3>
+                    <ul className="grid sm:grid-cols-2 gap-2 mb-4">
+                      {f.points.map((p, j) => (
+                        <li key={j} className="flex items-start gap-2 text-sm text-slate-300">
+                          <span className={`${c.text} mt-0.5 shrink-0`}>▸</span> {p}
+                        </li>
+                      ))}
+                    </ul>
+                    <span className={`inline-block text-xs px-3 py-1.5 rounded-full border mono font-bold ${c.badge}`}>
+                      LIVE: {f.demo}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="text-center mt-12">
+          <button onClick={() => setPage('demo')}
+            className="btn-primary px-8 py-3.5 rounded-2xl font-bold text-slate-900">
+            <span>🚀 Try All Features Live →</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIVE DEMO PAGE (full interactive)
+═══════════════════════════════════════════════════════ */
+const TRIAGE_Q = [
+  { q:"What is your primary symptom?", opts:["Chest pain / breathlessness","Fever & body ache","Head injury / trauma","Abdominal pain","Joint / bone pain","Other"] },
+  { q:"How severe is the pain? (1–10)", opts:["1-3 (Mild, manageable)","4-6 (Moderate)","7-9 (Severe)","10 (Unbearable — emergency)"] },
+  { q:"Duration of symptoms?", opts:["Less than 24 hours","1–3 days","More than 3 days","Chronic / recurring"] },
+];
+const SPEC_MAP = { "Chest pain / breathlessness":"Cardiologist","Fever & body ache":"General Physician","Head injury / trauma":"Emergency Medicine","Abdominal pain":"General Physician","Joint / bone pain":"Orthopedician","Other":"General Physician" };
+const HOSPITALS_FULL = [
+  { id:1, name:"Apollo Hospitals", type:"Multi-Specialty & Heart", dist:"0.8 km", rating:4.8, beds:12, er:true, color:"teal", lat: 12.9345, lng: 77.6101,
+    doctors:[
+      {name:"Dr. Priya Kapoor",spec:"Cardiologist",fee:800,slots:["09:00","10:30","02:00","04:30"]},
+      {name:"Dr. Rajan Mehta",spec:"Orthopedician",fee:600,slots:["11:00","12:00","03:00"]},
+      {name:"Dr. Sneha Iyer",spec:"General Physician",fee:400,slots:["09:30","11:30","01:30","05:00"]}
+    ]},
+  { id:2, name:"Fortis Care Centre", type:"Trauma & ICU", dist:"1.4 km", rating:4.6, beds:6, er:true, color:"rose", lat: 12.8931, lng: 77.5976,
+    doctors:[
+      {name:"Dr. Arvind Nair",spec:"Emergency Medicine",fee:500,slots:["08:30","10:00","01:00","03:30"]},
+      {name:"Dr. Meena Rao",spec:"Neurologist",fee:900,slots:["10:30","02:30","04:00"]}
+    ]},
+  { id:3, name:"Max Super Specialty", type:"Oncology & Robotic Hub", dist:"2.1 km", rating:4.7, beds:9, er:false, color:"violet", lat: 12.9579, lng: 77.6534,
+    doctors:[
+      {name:"Dr. Kiran Bose",spec:"Oncologist",fee:1200,slots:["09:00","11:00","03:30"]},
+      {name:"Dr. Fatima Sheikh",spec:"Radiologist",fee:700,slots:["10:00","01:00","05:00"]}
+    ]},
+  { id:4, name:"AIIMS Trauma Centre", type:"Govt Tier-1 Apex Trauma", dist:"3.2 km", rating:4.9, beds:18, er:true, color:"amber", lat: 12.9856, lng: 77.5732,
+    doctors:[
+      {name:"Dr. Suresh Kumar",spec:"Neurologist",fee:200,slots:["08:00","09:30","11:00","02:00"]},
+      {name:"Dr. Anita Sharma",spec:"Cardiologist",fee:150,slots:["10:00","01:30","04:00"]}
+    ]},
+  { id:5, name:"Manipal Hospitals", type:"Comprehensive & Neuro", dist:"2.8 km", rating:4.8, beds:12, er:true, color:"cyan", lat: 12.9592, lng: 77.6444,
+    doctors:[
+      {name:"Dr. Vikram Sen",spec:"Neurologist",fee:850,slots:["09:00","11:30","02:00"]},
+      {name:"Dr. Kavita Reddy",spec:"General Physician",fee:500,slots:["10:00","01:00","04:30"]}
+    ]},
+  { id:6, name:"Narayana Health City", type:"Cardiac & Transplant", dist:"4.1 km", rating:4.9, beds:14, er:true, color:"emerald", lat: 12.8258, lng: 77.6897,
+    doctors:[
+      {name:"Dr. Devi Prasad",spec:"Cardiologist",fee:1000,slots:["09:00","11:00","03:00"]},
+      {name:"Dr. Rohan Murthy",spec:"Cardiologist",fee:750,slots:["10:30","01:30","04:00"]}
+    ]},
+  { id:7, name:"Yashoda Hospitals", type:"Critical & Neuro Specialty", dist:"1.9 km", rating:4.7, beds:8, er:true, color:"pink", lat: 12.9211, lng: 77.6205,
+    doctors:[
+      {name:"Dr. G. V. Rao",spec:"Emergency Medicine",fee:700,slots:["09:30","12:00","03:00"]},
+      {name:"Dr. Sunitha Verma",spec:"Pulmonologist",fee:650,slots:["10:00","02:00","05:00"]}
+    ]},
+  { id:8, name:"KIMS Hospitals", type:"Transplant & Gastro Hub", dist:"3.5 km", rating:4.8, beds:11, er:true, color:"purple", lat: 12.9716, lng: 77.5946,
+    doctors:[
+      {name:"Dr. B. Bhaskar",spec:"Gastroenterologist",fee:800,slots:["09:00","11:00","02:30"]},
+      {name:"Dr. Swati Deshmukh",spec:"General Physician",fee:450,slots:["10:30","01:00","04:00"]}
+    ]},
+  { id:9, name:"Care Hospitals", type:"Heart & Emergency Trauma", dist:"2.4 km", rating:4.6, beds:7, er:true, color:"rose", lat: 12.9432, lng: 77.6012,
+    doctors:[
+      {name:"Dr. Somaraju Murthy",spec:"Cardiologist",fee:750,slots:["08:30","11:00","03:30"]},
+      {name:"Dr. N. C. Srinivas",spec:"Orthopedician",fee:600,slots:["10:00","01:30","04:00"]}
+    ]},
+  { id:10, name:"Rainbow Children's Hospital", type:"Pediatrics & Neonatal NICU", dist:"1.6 km", rating:4.9, beds:9, er:true, color:"blue", lat: 12.9351, lng: 77.6189,
+    doctors:[
+      {name:"Dr. Preetha Nambiar",spec:"Pediatrician",fee:600,slots:["09:00","10:30","12:00","04:00"]},
+      {name:"Dr. Anand Joshi",spec:"Pediatrician",fee:800,slots:["11:00","02:00","05:00"]}
+    ]},
+  { id:11, name:"Aster CMI Hospital", type:"Orthopedics & Spine Care", dist:"3.8 km", rating:4.7, beds:10, er:true, color:"teal", lat: 13.0562, lng: 77.5925,
+    doctors:[
+      {name:"Dr. C. P. Sridhar",spec:"Orthopedician",fee:850,slots:["09:30","11:30","03:00"]},
+      {name:"Dr. Tanuja Nair",spec:"Orthopedician",fee:700,slots:["10:00","01:00","04:00"]}
+    ]},
+  { id:12, name:"Medanta - The Medicity", type:"Multi-Super Specialty", dist:"4.5 km", rating:4.8, beds:12, er:true, color:"amber", lat: 12.9982, lng: 77.6712,
+    doctors:[
+      {name:"Dr. Naresh Trehan",spec:"Cardiologist",fee:1500,slots:["09:00","12:00","03:00"]},
+      {name:"Dr. Rajiv Agarwal",spec:"General Physician",fee:900,slots:["10:30","01:30","04:30"]}
+    ]},
+];
+
+const cmap = {
+  teal:    { bg:"bg-teal-500/10", border:"border-teal-500/40", text:"text-teal-400", dot:"bg-teal-400" },
+  rose:    { bg:"bg-rose-500/10", border:"border-rose-500/40", text:"text-rose-400", dot:"bg-rose-400" },
+  violet:  { bg:"bg-violet-500/10", border:"border-violet-500/40", text:"text-violet-400", dot:"bg-violet-400" },
+  amber:   { bg:"bg-amber-500/10", border:"border-amber-500/40", text:"text-amber-400", dot:"bg-amber-400" },
+  cyan:    { bg:"bg-cyan-500/10", border:"border-cyan-500/40", text:"text-cyan-400", dot:"bg-cyan-400" },
+  emerald: { bg:"bg-emerald-500/10", border:"border-emerald-500/40", text:"text-emerald-400", dot:"bg-emerald-400" },
+  pink:    { bg:"bg-pink-500/10", border:"border-pink-500/40", text:"text-pink-400", dot:"bg-pink-400" },
+  purple:  { bg:"bg-purple-500/10", border:"border-purple-500/40", text:"text-purple-400", dot:"bg-purple-400" },
+  blue:    { bg:"bg-blue-500/10", border:"border-blue-500/40", text:"text-blue-400", dot:"bg-blue-400" }
+};
+
+function DemoPage() {
+  const [triageStep, setTriageStep]       = useState(0);
+  const [recSpec, setRecSpec]             = useState(null);
+  const [filterSpec, setFilterSpec]       = useState("All");
+  const [selHosp, setSelHosp]             = useState(null);
+  const [selDoc, setSelDoc]               = useState(null);
+  const [selSlot, setSelSlot]             = useState(null);
+  const [booking, setBooking]             = useState("idle");
+  const [ambulance, setAmbulance]         = useState("idle");
+  const [token] = useState(() => Math.floor(Math.random()*80)+20);
+  const specs = ["All","Cardiologist","Emergency Medicine","General Physician","Orthopedician","Neurologist","Oncologist","Radiologist","Pediatrician","Gastroenterologist","Pulmonologist"];
+
+  function answerTriage(ans, step) {
+    if (step === 1) setRecSpec(SPEC_MAP[ans] || "General Physician");
+    if (step < TRIAGE_Q.length) setTriageStep(step+1);
+    else setTriageStep(TRIAGE_Q.length+1);
+  }
+
+  const filteredH = filterSpec==="All" ? HOSPITALS_FULL : HOSPITALS_FULL.filter(h => h.doctors.some(d => d.spec===filterSpec));
+
+  return (
+    <div className="pt-24 pb-16 px-4 md:px-6 min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div className="text-center">
+          <h1 className="text-4xl font-black text-white mb-2">🏥 Live <span className="grad-text">DHANVI</span> Demo</h1>
+          <p className="text-slate-400 text-sm">Full interactive simulation — AI triage, hospital map, OPD booking & emergency dispatch</p>
+        </div>
+
+        {/* SOS Banner */}
+        <div className="bg-rose-950/50 border border-rose-500/40 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <p className="text-rose-400 font-black text-sm">🚨 EMERGENCY ONE-TAP AMBULANCE DISPATCH</p>
+            <p className="text-xs text-slate-400 mt-0.5">Geolocated nearest trauma centre + ambulance simultaneously</p>
+          </div>
+          {ambulance==="idle" && <button onClick={() => { setAmbulance("dispatched"); setTimeout(()=>setAmbulance("arrived"),5000); }} className="shrink-0 bg-rose-500 hover:bg-rose-400 text-white font-black px-6 py-2.5 rounded-xl text-sm transition">📡 Dispatch Now</button>}
+          {ambulance==="dispatched" && <div className="flex items-center gap-2 text-rose-300 font-bold text-sm shrink-0"><span className="w-3 h-3 rounded-full bg-rose-400 animate-ping inline-block"></span>En Route · ETA ~4 min</div>}
+          {ambulance==="arrived" && <div className="text-emerald-400 font-bold text-sm shrink-0">✅ Arrived — Apollo Trauma Bay #2</div>}
+        </div>
+
+        <div className="grid lg:grid-cols-5 gap-6">
+          {/* AI Triage */}
+          <div className="lg:col-span-2 glass rounded-2xl p-5 border border-teal-500/20 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-black text-white flex items-center gap-2 text-sm">
+                <span className="w-7 h-7 rounded-full bg-teal-500 text-slate-900 text-xs font-black flex items-center justify-center">AI</span>
+                Clinical Triage Assistant
+              </h3>
+              {triageStep>0 && <button onClick={()=>{setTriageStep(0);setRecSpec(null);}} className="text-xs text-slate-500 hover:text-white underline">Reset</button>}
+            </div>
+
+            {triageStep===0 && (
+              <div className="text-center space-y-3 py-6">
+                <div className="text-5xl">🩺</div>
+                <p className="text-sm text-slate-300">Describe your symptoms. Our AI recommends the right specialist in under 60 seconds.</p>
+                <button onClick={()=>setTriageStep(1)} className="btn-primary w-full py-2.5 rounded-xl font-bold text-slate-900 text-sm"><span>Start AI Triage</span></button>
+              </div>
+            )}
+
+            {triageStep>=1 && triageStep<=TRIAGE_Q.length && (
+              <div className="space-y-3">
+                <div className="flex gap-1">
+                  {TRIAGE_Q.map((_,i) => <div key={i} className={`h-1 flex-1 rounded-full ${i<triageStep?'bg-teal-400':'bg-slate-700'}`}></div>)}
+                </div>
+                <p className="text-xs text-teal-400 font-bold uppercase tracking-wider">Question {triageStep} / {TRIAGE_Q.length}</p>
+                <p className="text-sm text-white font-semibold">{TRIAGE_Q[triageStep-1].q}</p>
+                <div className="space-y-2">
+                  {TRIAGE_Q[triageStep-1].opts.map((opt,i) => (
+                    <button key={i} onClick={()=>answerTriage(opt,triageStep)}
+                      className="w-full text-left text-xs glass border border-slate-700 hover:border-teal-500/50 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white transition">{opt}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {triageStep>TRIAGE_Q.length && recSpec && (
+              <div className="space-y-3">
+                <div className="p-4 bg-teal-950/50 border border-teal-500/30 rounded-xl">
+                  <p className="text-xs text-teal-400 font-bold uppercase mb-1">AI Recommendation</p>
+                  <p className="text-white font-black">See a <span className="text-teal-300">{recSpec}</span></p>
+                  <p className="text-xs text-slate-500 mt-1">Based on symptoms, severity & duration. Not a substitute for professional diagnosis.</p>
+                </div>
+                <button onClick={()=>setFilterSpec(recSpec)}
+                  className="btn-primary w-full py-2.5 rounded-xl font-bold text-slate-900 text-sm"><span>Find {recSpec}s Near Me →</span></button>
+              </div>
+            )}
+          </div>
+
+          {/* Map + Hospitals */}
+          <div className="lg:col-span-3 space-y-4">
+            <GoogleHospitalMap
+              hospitals={filteredH}
+              selectedHospital={selHosp}
+              onSelectHospital={(h) => {
+                setSelHosp(h);
+                setSelDoc(null);
+                setSelSlot(null);
+                setBooking("idle");
+              }}
+              height="280px"
+              showRoute={true}
+              activeAmbulance={ambulance === "dispatched"}
+            />
+
+            <div className="flex gap-2 flex-wrap">
+              {specs.map(s=>(
+                <button key={s} onClick={()=>setFilterSpec(s)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition ${filterSpec===s?'bg-teal-500 text-slate-900':'glass border border-slate-700 text-slate-400 hover:text-white'}`}>{s}</button>
+              ))}
+            </div>
+
+            <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+              {filteredH.map(h => {
+                const c = cmap[h.color];
+                return (
+                  <div key={h.id} onClick={()=>{setSelHosp(h);setSelDoc(null);setSelSlot(null);setBooking("idle");}}
+                    className={'p-3 rounded-xl border cursor-pointer transition-all '+(selHosp?.id===h.id ? c.bg+' '+c.border : 'glass border-slate-700 hover:border-slate-500')}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={'w-2.5 h-2.5 rounded-full shrink-0 '+c.dot}></div>
+                        <div><p className="text-sm font-bold text-white">{h.name}</p><p className="text-xs text-slate-400">{h.type} · {h.dist}</p></div>
+                      </div>
+                      <div className="text-right">
+                        <p className={'text-xs font-bold '+c.text}>⭐ {h.rating}</p>
+                        <p className="text-[10px] text-slate-500">{h.beds} beds</p>
+                        {h.er && <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">24/7 ER</span>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Booking Panel */}
+        {selHosp && booking!=="confirmed" && (
+          <div className="glass rounded-2xl p-6 border border-teal-500/20 space-y-5">
+            <div className="flex items-center justify-between">
+              <h3 className="font-black text-white text-lg">📅 Book OPD — <span className={cmap[selHosp.color].text}>{selHosp.name}</span></h3>
+              <button onClick={()=>setSelHosp(null)} className="text-slate-400 hover:text-white text-xs underline">Close</button>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-3">Select Doctor</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {selHosp.doctors.map((doc,i)=>(
+                  <div key={i} onClick={()=>{setSelDoc(doc);setSelSlot(null);}}
+                    className={'p-3 rounded-xl border cursor-pointer transition '+(selDoc===doc?'bg-teal-950/50 border-teal-500/50':'glass border-slate-700 hover:border-slate-500')}>
+                    <p className="text-sm font-bold text-white">{doc.name}</p>
+                    <p className="text-xs text-teal-400">{doc.spec}</p>
+                    <p className="text-xs text-slate-500 mt-1">₹{doc.fee} consultation</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {selDoc && (
+              <div>
+                <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-3">Available Slots — Today</p>
+                <div className="flex flex-wrap gap-2">
+                  {selDoc.slots.map((slot,i)=>(
+                    <button key={i} onClick={()=>setSelSlot(slot)}
+                      className={`px-4 py-2 rounded-xl text-sm mono font-bold transition ${selSlot===slot?'bg-teal-500 text-slate-900':'glass border border-slate-700 text-slate-300 hover:border-teal-500/50'}`}>{slot}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {selDoc && selSlot && (
+              <div className="bg-slate-950/60 rounded-xl p-4 border border-slate-700 space-y-4">
+                <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Booking Summary</p>
+                <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                  <div><span className="text-slate-600">Hospital: </span>{selHosp.name}</div>
+                  <div><span className="text-slate-600">Doctor: </span>{selDoc.name}</div>
+                  <div><span className="text-slate-600">Specialty: </span>{selDoc.spec}</div>
+                  <div><span className="text-slate-600">Slot: </span><span className="text-teal-400 font-bold">{selSlot} Today</span></div>
+                  <div><span className="text-slate-600">Fee: </span><span className="text-emerald-400 font-bold">₹{selDoc.fee}</span></div>
+                  <div><span className="text-slate-600">Mode: </span>In-Person OPD</div>
+                </div>
+                <button onClick={()=>{setBooking("confirming");setTimeout(()=>setBooking("confirmed"),1800);}}
+                  className={`w-full py-3 rounded-xl font-black text-sm transition ${booking==="confirming"?'bg-slate-700 text-slate-400 cursor-wait':'btn-primary text-slate-900'}`}>
+                  <span>{booking==="confirming"?"⏳ Processing payment…":"✅ Confirm & Pay ₹"+selDoc.fee}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Booking Confirmed */}
+        {booking==="confirmed" && (
+          <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-8 text-center space-y-4">
+            <div className="text-5xl">✅</div>
+            <h3 className="text-2xl font-black text-emerald-300">Appointment Confirmed!</h3>
+            <p className="text-slate-300"><strong>{selDoc.name}</strong> · {selDoc.spec}<br/><strong>{selHosp.name}</strong> · {selSlot} Today</p>
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-xl glass border border-slate-700">
+              <span className="text-xs text-slate-400">OPD Token</span>
+              <span className="text-3xl font-black text-teal-400 mono">#{token}</span>
+            </div>
+            <p className="text-xs text-slate-500">SMS & ABHA record updated. Bring your DHANVI Health Pass.</p>
+            <button onClick={()=>{setSelHosp(null);setBooking("idle");setSelDoc(null);setSelSlot(null);}} className="text-xs text-teal-400 underline">Book Another →</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   HEALTH ID CARD PAGE
+═══════════════════════════════════════════════════════ */
+function CardPage() {
+  const [side, setSide]         = useState("front");
+  const [flipped, setFlipped]   = useState(false);
+  const [otp, setOtp]           = useState("");
+  const [unlocked, setUnlocked] = useState(false);
+  const qrRef = useRef(null);
+
+  function flip(s) {
+    setSide(s);
+    setFlipped(s==="back");
+  }
+
+  useEffect(() => {
+    if (side==="back" && qrRef.current) {
+      qrRef.current.innerHTML = "";
+      try {
+        new QRCode(qrRef.current, {
+          text:"https://dhanvi.health/emergency/DH-2026-9812-IN",
+          width:96, height:96, colorDark:"#0f172a", colorLight:"#ffffff"
+        });
+      } catch(e) {}
+    }
+  }, [side]);
+
+  return (
+    <div className="pt-24 pb-16 px-6 min-h-screen">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-10">
+          <span className="text-xs uppercase tracking-widest text-amber-400 font-bold mb-4 block">Smart Health Identity</span>
+          <h1 className="text-5xl font-black text-white mb-3">DHANVI <span className="grad-text">Health ID Card</span></h1>
+          <p className="text-slate-400 max-w-lg mx-auto">Dual-Format: Physical PVC NFC + Digital Wallet Pass. Two-tier privacy. Zero connectivity needed.</p>
+        </div>
+
+        <div className="flex gap-3 justify-center mb-8">
+          {["front","back"].map(s=>(
+            <button key={s} onClick={()=>flip(s)}
+              className={`px-6 py-2 rounded-xl font-bold text-sm transition ${side===s?'bg-teal-500 text-slate-900':'btn-outline text-slate-300'}`}>
+              {s==="front"?"🩺 Front — Emergency Vitals":"📡 Back — SOS Contacts & QR"}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center">
+          {/* 3D Flip Card */}
+          <div className="flip-container w-[430px] h-[270px] shrink-0 mx-auto lg:mx-0">
+            <div className={`flip-card w-full h-full relative ${flipped?'flipped':''}`}>
+              {/* FRONT */}
+              <div className="flip-front absolute inset-0 rounded-2xl p-5 overflow-hidden text-slate-200"
+                style={{ background:"linear-gradient(135deg,#020817,#0f172a,#042f2e)", border:"1px solid rgba(20,184,166,0.25)", boxShadow:"0 25px 80px rgba(20,184,166,0.12)" }}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl"></div>
+                <div className="h-full flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between border-b border-teal-500/20 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-md bg-teal-500 text-slate-900 font-black text-xs flex items-center justify-center">D</div>
+                        <span className="font-black text-xs tracking-widest text-teal-400">DHANVI HEALTH PASS</span>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 mono font-bold">EMERGENCY ID</span>
+                    </div>
+                    <div className="flex items-center gap-4 mt-3">
+                      <div className="w-14 h-16 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-600 text-[10px] shrink-0 overflow-hidden">
+                        <span className="text-2xl">👤</span>
+                      </div>
+                      <div>
+                        <div className="font-black text-base text-white">RAHUL SHARMA</div>
+                        <div className="text-slate-400 text-[11px] mt-0.5">DOB: 14-Aug-1998 · Male</div>
+                        <div className="text-teal-400 mono text-[10px] mt-0.5">ID: DH-2026-9812-IN</div>
+                      </div>
+                    </div>
+                    <div className="mt-3 rounded-xl px-3 py-1.5 flex justify-between items-center text-xs" style={{ background:"rgba(244,63,94,0.08)", border:"1px solid rgba(244,63,94,0.25)" }}>
+                      <div><span className="text-slate-500 text-[10px] block">BLOOD GROUP</span><span className="font-black text-rose-400 text-sm">O+ Positive</span></div>
+                      <div className="text-right"><span className="text-slate-500 text-[10px] block">ORGAN DONOR</span><span className="font-bold text-teal-300 text-xs">YES ✓</span></div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-end text-[10px] border-t border-slate-800/60 pt-2">
+                    <div>
+                      <div className="text-slate-500">ALLERGIES: <span className="text-rose-300 font-semibold">Penicillin, Sulfa</span></div>
+                      <div className="text-slate-500">CONDITIONS: <span className="text-amber-300 font-semibold">Type-1 Diabetes</span></div>
+                    </div>
+                    <span className="text-teal-400 mono text-[9px] flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-teal-400 animate-ping inline-block"></span>NFC ACTIVE
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* BACK */}
+              <div className="flip-back absolute inset-0 rounded-2xl p-5 overflow-hidden text-slate-200"
+                style={{ background:"linear-gradient(135deg,#020817,#0f172a,#061a3a)", border:"1px solid rgba(20,184,166,0.2)", boxShadow:"0 25px 80px rgba(20,184,166,0.12)" }}>
+                <div className="absolute top-0 left-0 right-0 h-8 bg-slate-950 rounded-t-2xl"></div>
+                <div className="h-full flex flex-col justify-between pt-6">
+                  <div>
+                    <div className="text-xs font-black text-teal-400 uppercase tracking-wider border-b border-slate-700/60 pb-1.5">Emergency Contacts — Paramedic Use</div>
+                    <div className="text-xs space-y-1 mt-2">
+                      <div className="flex justify-between"><span className="text-slate-400">1. Sunita Sharma (Mother)</span><span className="mono text-teal-300">+91 98765-43210</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">2. Ajay Sharma (Brother)</span><span className="mono text-teal-300">+91 98765-43211</span></div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-3 p-2 rounded-xl" style={{ background:"rgba(15,23,42,0.5)", border:"1px solid rgba(30,41,59,0.8)" }}>
+                      <div ref={qrRef} className="bg-white p-1 rounded-lg shrink-0"></div>
+                      <div className="text-[10px] text-slate-400 space-y-1">
+                        <p className="font-bold text-white text-xs">Instant First Responder Scan</p>
+                        <p>Level 1: Life-saving vitals — instant</p>
+                        <p>Level 2: Full EHR — OTP required</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-[9px] text-slate-600 border-t border-slate-800 pt-1.5">
+                    <span className="mono">ABHA: 91-4432-8871-0023</span>
+                    <span>WHO Digital Health Ready</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right panel */}
+          <div className="flex-1 space-y-6 w-full max-w-sm mx-auto lg:mx-0">
+            {/* Features list */}
+            <div className="glass rounded-2xl p-5 border border-amber-500/15 space-y-3">
+              <h3 className="font-black text-white text-sm mb-3">🪪 Card Specifications</h3>
+              {[
+                ["Format","PVC NFC + Digital Wallet Pass"],
+                ["NFC Chip","NTAG216 — 924 bytes"],
+                ["Dimensions","85.6 × 53.98 mm (CR-80)"],
+                ["Privacy","2-Tier: Instant + OTP-locked"],
+                ["Connectivity","Works offline — zero internet"],
+                ["Standard","ABHA / ABDM / WHO compliant"],
+              ].map(([k,v],i)=>(
+                <div key={i} className="flex justify-between text-xs">
+                  <span className="text-slate-500">{k}</span>
+                  <span className="text-slate-300 font-medium text-right max-w-[55%]">{v}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Level 2 Vault */}
+            <div className="glass rounded-2xl p-5 border border-teal-500/20">
+              <h3 className="font-bold text-white text-sm mb-1 flex justify-between">
+                🔐 Level 2 Health Vault
+                <span className="text-xs text-slate-500 font-normal">OTP-Protected</span>
+              </h3>
+              <p className="text-xs text-slate-500 mb-3">Full medical history, prescriptions & lab reports. Patient OTP required.</p>
+              {!unlocked ? (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input type="text" placeholder="Enter OTP — try 1234" value={otp} onChange={e=>setOtp(e.target.value)}
+                      onKeyDown={e=>{if(e.key==="Enter"&&otp==="1234")setUnlocked(true);else if(e.key==="Enter")alert("Demo OTP: 1234");}}
+                      className="flex-1 bg-slate-950 border border-slate-700 text-xs text-white rounded-xl px-3 py-2 focus:outline-none focus:border-teal-500 mono" />
+                    <button onClick={()=>{if(otp==="1234")setUnlocked(true);else alert("Demo OTP: 1234");}}
+                      className="btn-primary px-4 py-2 rounded-xl font-bold text-slate-900 text-xs"><span>Unlock</span></button>
+                  </div>
+                  <p className="text-[10px] text-slate-600">Demo: use OTP <span className="mono text-teal-500">1234</span></p>
+                </div>
+              ) : (
+                <div className="space-y-2 text-xs">
+                  <div className="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-bold">✓ Level 2 Vault Authorized</div>
+                  <div className="text-slate-300 space-y-1.5">
+                    <div>• <strong>2025:</strong> Appendectomy — City Care Hospital</div>
+                    <div>• <strong>Medications:</strong> Metformin 500mg, Atorvastatin 10mg</div>
+                    <div>• <strong>Prescriptions:</strong> 4 digital PDFs archived</div>
+                    <div>• <strong>Last Lab Report:</strong> 15-Sep-2026 — HbA1c: 6.8%</div>
+                  </div>
+                  <button onClick={()=>{setUnlocked(false);setOtp("");}} className="text-xs text-rose-400 underline">Lock Vault</button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Card features grid */}
+        <div className="grid md:grid-cols-3 gap-4 mt-12">
+          {[
+            { icon:"📡", title:"NFC Tap", desc:"First responders tap to instantly access critical vitals — no app, no internet, no delay.", color:"teal" },
+            { icon:"🔒", title:"Two-Tier Privacy", desc:"Life-saving data is always accessible. Sensitive EHR is patient-OTP locked for complete control.", color:"amber" },
+            { icon:"📱", title:"Digital Wallet", desc:"Add to Apple Wallet or Google Pay. Works alongside the physical NFC card seamlessly.", color:"violet" },
+          ].map((c,i)=>(
+            <div key={i} className="glass rounded-2xl p-5 border border-slate-700 hover:border-teal-500/30 transition-all text-center">
+              <div className="text-3xl mb-3">{c.icon}</div>
+              <h4 className="font-bold text-white mb-2">{c.title}</h4>
+              <p className="text-xs text-slate-400 leading-relaxed">{c.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   COMPLIANCE PAGE
+═══════════════════════════════════════════════════════ */
+function CompliancePage() {
+  useScrollReveal();
+  return (
+    <div className="pt-24 pb-16 px-6 min-h-screen">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-16 reveal">
+          <span className="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-4 block">Regulatory Compliance</span>
+          <h1 className="text-5xl font-black text-white mb-4">Built to <span className="grad-text">global standards</span></h1>
+          <p className="text-slate-400 max-w-xl mx-auto">Every layer of DHANVI is designed in strict alignment with national and international digital health regulations.</p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {COMPLIANCE.map((c,i)=>(
+            <div key={i} className="glass rounded-2xl p-6 border border-emerald-500/15 hover:border-emerald-500/35 transition-all reveal" style={{transitionDelay:`${i*0.08}s`}}>
+              <div className="text-4xl mb-4">{c.flag}</div>
+              <h3 className="text-white font-black text-lg mb-2">{c.body}</h3>
+              <p className="text-slate-400 text-sm">{c.detail}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="glass rounded-3xl p-8 md:p-12 border border-teal-500/15 reveal">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div>
+              <h2 className="text-3xl font-black text-white mb-4">WHO Digital Health <span className="grad-text">Framework</span></h2>
+              <div className="space-y-4">
+                {[
+                  { title:"Universal Access & Equity", desc:"Lightweight interface optimized for 2G/low-bandwidth environments across Tier-2 and Tier-3 cities." },
+                  { title:"Patient Safety & Governance", desc:"AI triage acts as recommendation support only — licensed physicians retain clinical authority." },
+                  { title:"Data Privacy & Minimization", desc:"Only minimum necessary data is collected, AES-256 encrypted and patient-consent gated." },
+                  { title:"Interoperability", desc:"Open standards APIs: FHIR R4, HL7, and full ABDM/UHI protocol compliance." },
+                ].map((item,i)=>(
+                  <div key={i} className="flex gap-3">
+                    <div className="w-2 h-2 rounded-full bg-teal-400 mt-2 shrink-0"></div>
+                    <div>
+                      <p className="text-white font-bold text-sm">{item.title}</p>
+                      <p className="text-slate-400 text-xs mt-0.5">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-4">
+              {[["ABDM Integration","✅ Certified"],["ABHA Linked Records","✅ Active"],["UHI API Compliant","✅ Verified"],["WHO DHI Compliant","✅ Certified"],["NABH Ready","✅ In Progress"],["GDPR / DPDP Act","✅ Compliant"]].map(([k,v],i)=>(
+                <div key={i} className="flex justify-between items-center p-3 rounded-xl bg-slate-950/50 border border-slate-800">
+                  <span className="text-slate-300 text-sm font-medium">{k}</span>
+                  <span className="text-emerald-400 text-xs font-bold mono">{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   ABOUT PAGE
+═══════════════════════════════════════════════════════ */
+function AboutPage({ setPage }) {
+  useScrollReveal();
+  const team = [
+    { name:"Team Epic Engineers", role:"Core Development Team", emoji:"⚡", desc:"Engineering the Future, Inspiring Legacies. A multidisciplinary team of engineers, designers, and healthcare professionals." },
+  ];
+  const arch = [
+    { layer:"Policy Layer", items:["ABDM","NHA","MOHFW"], icon:"🏛️", color:"teal" },
+    { layer:"Research Layer", items:["WHO Guidelines","NLP Triage Algorithms","Clinical Advisory"], icon:"🔬", color:"violet" },
+    { layer:"Technology Layer", items:["React.js Frontend","Node/Express API","Supabase/PostgreSQL","NTAG NFC Hardware"], icon:"⚙️", color:"cyan" },
+  ];
+
+  return (
+    <div className="pt-24 pb-16 px-6 min-h-screen">
+      <div className="max-w-6xl mx-auto space-y-20">
+        {/* Mission */}
+        <div className="text-center reveal">
+          <span className="text-xs uppercase tracking-widest text-violet-400 font-bold mb-4 block">Our Mission</span>
+          <h1 className="text-5xl md:text-6xl font-black text-white mb-6">Healthcare is a <br/><span className="grad-text">fundamental right</span></h1>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">DHANVI was built to eliminate the fragmentation, delays, and inequities that prevent millions of Indians from accessing quality healthcare at the right time.</p>
+        </div>
+
+        {/* Architecture */}
+        <div className="reveal">
+          <div className="text-center mb-10">
+            <span className="text-xs uppercase tracking-widest text-cyan-400 font-bold mb-4 block">System Architecture</span>
+            <h2 className="text-4xl font-black text-white">3-Tier <span className="grad-text">Scalable Stack</span></h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {arch.map((a,i)=>{
+              const colors={teal:"border-teal-500/30 bg-teal-500/5 text-teal-400",violet:"border-violet-500/30 bg-violet-500/5 text-violet-400",cyan:"border-cyan-500/30 bg-cyan-500/5 text-cyan-400"};
+              return (
+                <div key={i} className={`glass rounded-2xl p-6 border ${colors[a.color].split(' ')[0]} reveal`} style={{transitionDelay:`${i*0.12}s`}}>
+                  <div className="text-3xl mb-3">{a.icon}</div>
+                  <h3 className={`font-black text-base mb-4 ${colors[a.color].split(' ')[2]}`}>{a.layer}</h3>
+                  <div className="space-y-2">
+                    {a.items.map((item,j)=>(
+                      <div key={j} className="flex items-center gap-2 text-sm text-slate-300">
+                        <span className={`w-1.5 h-1.5 rounded-full ${a.color==='teal'?'bg-teal-400':a.color==='violet'?'bg-violet-400':'bg-cyan-400'} shrink-0`}></span>
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Problem vs Solution */}
+        <div className="grid md:grid-cols-2 gap-6 reveal">
+          <div className="glass rounded-2xl p-6 border border-rose-500/20">
+            <h3 className="text-rose-400 font-black text-xl mb-4">😔 The Problem</h3>
+            <div className="space-y-3">
+              {["Information fragmentation causing critical care delays","Hours wasted on phone calls and OPD queues","Chaotic emergency response with no centralized data","45.11% out-of-pocket healthcare spend","Lost golden hour due to unknown hospital capacity"].map((p,i)=>(
+                <div key={i} className="flex gap-2 text-sm text-slate-300"><span className="text-rose-400 shrink-0 mt-0.5">✗</span>{p}</div>
+              ))}
+            </div>
+          </div>
+          <div className="glass rounded-2xl p-6 border border-teal-500/20">
+            <h3 className="text-teal-400 font-black text-xl mb-4">✅ The DHANVI Solution</h3>
+            <div className="space-y-3">
+              {["Unified digital health identity accessible anywhere","Real-time booking with live slot visibility","One-tap emergency dispatch with health data ready","Transparent fees reducing financial uncertainty","AI triage routing to right specialist in 60 seconds"].map((s,i)=>(
+                <div key={i} className="flex gap-2 text-sm text-slate-300"><span className="text-teal-400 shrink-0 mt-0.5">✓</span>{s}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="text-center reveal">
+          <button onClick={()=>setPage('demo')}
+            className="btn-primary px-10 py-4 rounded-2xl text-lg font-black text-slate-900">
+            <span>🚀 Experience DHANVI →</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+function Footer({ setPage }) {
+  return (
+    <footer className="bg-slate-950 border-t border-slate-800/60 pt-16 pb-8 px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-4 gap-10 mb-12">
+          {/* Brand */}
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center font-black text-slate-900 text-xl">D</div>
+              <div>
+                <div className="font-black text-white">DHANVI</div>
+                <div className="text-[10px] text-teal-400 tracking-widest uppercase">Healthcare Ecosystem</div>
+              </div>
+            </div>
+            <p className="text-slate-500 text-xs leading-relaxed">Right Care. Right Time. Right Place. Bringing smart healthcare access to every Indian citizen.</p>
+            <div className="flex gap-3 mt-4">
+              {["🐦","💼","📘","📸"].map((icon,i)=>(
+                <button key={i} className="w-8 h-8 rounded-lg glass border border-slate-700 text-sm flex items-center justify-center hover:border-teal-500/40 transition">{icon}</button>
+              ))}
+            </div>
+          </div>
+
+          {[
+            { title:"Platform", links:[["Home","home"],["Features","features"],["Live Demo","demo"],["Health ID Card","card"]] },
+            { title:"Compliance", links:[["WHO Digital Health","compliance"],["ABDM / ABHA","compliance"],["UHI Protocol","compliance"],["Privacy Policy","compliance"]] },
+            { title:"Company", links:[["About Us","about"],["Team","about"],["Architecture","about"],["Contact","about"]] },
+          ].map((col,i)=>(
+            <div key={i}>
+              <h4 className="text-white font-bold text-sm mb-4">{col.title}</h4>
+              <div className="space-y-2.5">
+                {col.links.map(([label,page],j)=>(
+                  <button key={j} onClick={()=>setPage(page)} className="block text-slate-500 hover:text-teal-400 text-xs transition text-left">{label}</button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t border-slate-800/60 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+          <p>© 2026 DHANVI Healthcare Ecosystem. Engineered by <span className="text-teal-500">Team Epic Engineers</span>.</p>
+          <div className="flex gap-4">
+            <span className="text-emerald-500 mono">WHO Compliant ✓</span>
+            <span className="text-emerald-500 mono">ABDM Aligned ✓</span>
+            <span className="text-emerald-500 mono">AES-256 Encrypted ✓</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   SUPER OP MODAL (10-MINUTE EXPRESS CARE JOURNEY)
+═══════════════════════════════════════════════════════ */
+function SuperOPModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
+  const [phase, setPhase] = useState("input");
+  const [symptom, setSymptom] = useState("3 రోజులుగా తీవ్రమైన జ్వరం మరియు గొంతు నొప్పి");
+  const [hospital, setHospital] = useState("Apollo Hospitals");
+  const [doctor, setDoctor] = useState("Dr. Priya Kapoor");
+  const [secondsLeft, setSecondsLeft] = useState(600);
+  const [activeStep, setActiveStep] = useState(0);
+  const [opData, setOpData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isVoiceSpeaking, setIsVoiceSpeaking] = useState(false);
+
+  const presets = [
+    "3 రోజులుగా తీవ్రమైన జ్వరం మరియు గొంతు నొప్పి",
+    "ఛాతీలో బరువు & శ్వాస తీసుకోవడంలో కష్టం",
+    "తీవ్రమైన తలనొప్పి & వికారం",
+    "కడుపులో మంట & గ్యాస్ సమస్య",
+    "Fever, sore throat & chills for 3 days"
+  ];
+
+  const steps = [
+    { title: "1. Instant Slot & Token Reservation", desc: "Auto-matched to specialist with confirmed token", time: "00:00 - 01:15" },
+    { title: "2. NFC Kiosk Touch & Automated Vitals", desc: "Patient identity linked; BP 124/82, SpO2 99% logged", time: "01:15 - 03:00" },
+    { title: "3. AI Clinical Triage & ESI Scoring", desc: "Algorithm analyzes symptom urgency & tests required", time: "03:00 - 04:30" },
+    { title: "4. Specialist Consultation & AI SOAP Note", desc: "Direct doctor consult; diagnosis & clinical notes recorded", time: "04:30 - 08:00" },
+    { title: "5. Digital Rx & Express Pharmacy Pass", desc: "Safety-checked prescription synced to Health Vault", time: "08:00 - 08:30" }
+  ];
+
+  async function startSuperOP() {
+    setLoading(true);
+    setError(null);
+    setPhase("running");
+    setActiveStep(0);
+    setSecondsLeft(600);
+
+    try {
+      const res = await fetch("/api/patient/super-op", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patient_id: "9876543210",
+          symptoms: symptom,
+          hospital_name: hospital,
+          doctor_name: doctor
+        })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || "Super OP processing failed");
+      }
+      setOpData(data);
+
+      let cur = 0;
+      const interval = setInterval(() => {
+        cur++;
+        setActiveStep(cur);
+        setSecondsLeft(prev => Math.max(90, prev - 110));
+        if (cur >= 4) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setPhase("completed");
+            setSecondsLeft(90);
+          }, 600);
+        }
+      }, 500);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      setPhase("input");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function formatTime(s) {
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    return (mins < 10 ? "0" : "") + mins + ":" + (secs < 10 ? "0" : "") + secs;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div className="relative w-full max-w-2xl bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col">
+        <div className="bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 text-white p-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl animate-bounce">⚡</span>
+            <div>
+              <h2 className="text-xl font-black tracking-tight leading-tight flex items-center gap-2">
+                SUPER OP EXPRESS
+                <span className="text-xs bg-black/30 px-2 py-0.5 rounded-full font-mono font-bold">10-MIN CARE SLA</span>
+              </h2>
+              <p className="text-xs text-rose-100">Zero Wait · Instant Token · AI Triage · Doctor Consult · Digital Rx</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center">✕</button>
+        </div>
+
+        <div className="p-6 overflow-y-auto flex-1 space-y-5">
+          {error && (
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium">
+              ⚠️ {error}
+            </div>
+          )}
+
+          {phase === "input" && (
+            <div className="space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900">
+                <span className="font-bold">🎯 How Super OP Works:</span> In a single click, DHANVI automates your complete outpatient cycle. An instant OPD token is reserved, your vitals and health history are pre-screened with Clinical AI, your consulting specialist is prepped with structured SOAP notes, and a safety-checked digital prescription is generated — <strong>100% completed under 10 minutes</strong>.
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Chief Health Symptoms</label>
+                <textarea rows="3" value={symptom} onChange={e => setSymptom(e.target.value)}
+                  className="w-full text-sm p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                  placeholder="Describe what you are experiencing..."></textarea>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {presets.map((p, i) => (
+                    <button key={i} onClick={() => setSymptom(p)}
+                      className="text-[11px] bg-slate-100 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 px-2.5 py-1 rounded-lg transition">
+                      + {p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-wider">Hospital</label>
+                  <select value={hospital} onChange={e => setHospital(e.target.value)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-medium">
+                    <option value="Apollo Hospitals">Apollo Hospitals (0.8 km · 10 ICU Beds)</option>
+                    <option value="Fortis Care Centre">Fortis Care Centre (1.4 km · 6 ICU Beds)</option>
+                    <option value="Max Super Specialty">Max Super Specialty (2.1 km · 9 ICU Beds)</option>
+                    <option value="AIIMS Trauma Centre">AIIMS Trauma Centre (3.2 km · 18 ICU Beds)</option>
+                    <option value="Manipal Hospitals">Manipal Hospitals (2.8 km · 12 ICU Beds)</option>
+                    <option value="Narayana Health City">Narayana Health City (4.1 km · 14 ICU Beds)</option>
+                    <option value="Yashoda Hospitals">Yashoda Hospitals (1.9 km · 8 ICU Beds)</option>
+                    <option value="KIMS Hospitals">KIMS Hospitals (3.5 km · 11 ICU Beds)</option>
+                    <option value="Care Hospitals">Care Hospitals (2.4 km · 7 ICU Beds)</option>
+                    <option value="Rainbow Children's Hospital">Rainbow Children's Hospital (1.6 km · 9 NICU Beds)</option>
+                    <option value="Aster CMI Hospital">Aster CMI Hospital (3.8 km · 10 ICU Beds)</option>
+                    <option value="Medanta - The Medicity">Medanta - The Medicity (4.5 km · 12 ICU Beds)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-wider">Doctor</label>
+                  <select value={doctor} onChange={e => setDoctor(e.target.value)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-medium">
+                    <option value="Dr. Priya Kapoor">Dr. Priya Kapoor (Cardiology & General)</option>
+                    <option value="Dr. Arvind Nair">Dr. Arvind Nair (Emergency Medicine)</option>
+                    <option value="Dr. Meena Rao">Dr. Meena Rao (Neurology)</option>
+                    <option value="Dr. Kiran Bose">Dr. Kiran Bose (Oncology)</option>
+                    <option value="Dr. Suresh Kumar">Dr. Suresh Kumar (Neurology & Trauma)</option>
+                    <option value="Dr. Devi Prasad">Dr. Devi Prasad (Cardiothoracic Surgery)</option>
+                    <option value="Dr. G. V. Rao">Dr. G. V. Rao (Critical Care)</option>
+                    <option value="Dr. B. Bhaskar">Dr. B. Bhaskar (Gastroenterology)</option>
+                    <option value="Dr. Preetha Nambiar">Dr. Preetha Nambiar (Pediatrics)</option>
+                    <option value="Dr. C. P. Sridhar">Dr. C. P. Sridhar (Orthopedics & Spine)</option>
+                    <option value="Dr. Naresh Trehan">Dr. Naresh Trehan (Cardiovascular)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button onClick={startSuperOP} disabled={loading}
+                className="w-full py-4 rounded-2xl font-black text-white bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 shadow-xl shadow-rose-500/25 hover:opacity-95 active:scale-[0.99] transition text-base flex items-center justify-center gap-2">
+                <span>⚡ LAUNCH SUPER OP (COMPLETE IN 10 MINS)</span>
+              </button>
+            </div>
+          )}
+
+          {phase === "running" && (
+            <div className="space-y-5 py-4">
+              <div className="bg-slate-900 text-white rounded-2xl p-4 flex items-center justify-between shadow-lg">
+                <div>
+                  <div className="text-[10px] text-teal-400 font-mono tracking-widest uppercase font-bold">10-MIN SLA COUNTDOWN</div>
+                  <div className="text-3xl font-black mono text-amber-400 tracking-wider">{formatTime(secondsLeft)}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs font-bold text-slate-300">Fast-Track OPD Active</div>
+                  <div className="text-[11px] text-emerald-400 font-mono">⚡ 100% On-Time Guarantee</div>
+                </div>
+              </div>
+
+              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                <div className="bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 h-full transition-all duration-500"
+                  style={{ width: ((activeStep + 1) * 20) + "%" }}></div>
+              </div>
+
+              <div className="space-y-2.5">
+                {steps.map((st, i) => {
+                  const isDone = i < activeStep;
+                  const isCurrent = i === activeStep;
+                  return (
+                    <div key={i} className={"p-3 rounded-2xl border transition flex items-center gap-3 " +
+                      (isDone ? "bg-emerald-50 border-emerald-200 text-emerald-900" :
+                       isCurrent ? "bg-amber-50 border-amber-300 text-amber-900 shadow-md scale-[1.01]" :
+                       "bg-slate-50 border-slate-200 text-slate-400 opacity-60")}>
+                      <div className={"w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 " +
+                        (isDone ? "bg-emerald-500 text-white" :
+                         isCurrent ? "bg-amber-500 text-white animate-spin" :
+                         "bg-slate-300 text-slate-600")}>
+                        {isDone ? "✓" : isCurrent ? "⏳" : (i + 1)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-bold text-xs">{st.title}</div>
+                        <div className="text-[11px] text-slate-500">{st.desc}</div>
+                      </div>
+                      <span className="text-[10px] mono font-bold shrink-0 text-slate-500">{st.time}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {phase === "completed" && opData && (
+            <div className="space-y-4">
+              <div className="bg-emerald-600 text-white rounded-2xl p-4 flex items-center justify-between shadow-lg">
+                <div>
+                  <span className="text-xs bg-emerald-800 px-2.5 py-0.5 rounded-full font-mono uppercase">10-Min SLA Achieved ✓</span>
+                  <h3 className="text-xl font-black mt-1">OPD Care Completed in 08m:30s!</h3>
+                  <p className="text-xs text-emerald-100">All 5 hospital journey milestones executed seamlessly.</p>
+                </div>
+                <div className="text-4xl">🎉</div>
+              </div>
+
+              <div className="border-2 border-indigo-500/30 rounded-2xl p-4 bg-indigo-50/50 space-y-3">
+                <div className="flex items-center justify-between border-b border-indigo-200 pb-2">
+                  <div>
+                    <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest font-mono">ONE-TIME VISIT PASS</span>
+                    <div className="text-base font-black text-slate-900">{opData.appointment.pass_id}</div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">CONFIRMED TOKEN</span>
+                    <div className="text-2xl font-black text-indigo-600">#{opData.appointment.token_number}</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div><span className="text-slate-500">Patient:</span> <strong>{opData.appointment.patient_name}</strong></div>
+                  <div><span className="text-slate-500">Specialist:</span> <strong>{opData.appointment.specialty}</strong></div>
+                  <div><span className="text-slate-500">Doctor:</span> <strong>{opData.appointment.doctor_name}</strong></div>
+                  <div><span className="text-slate-500">Hospital:</span> <strong>{opData.appointment.hospital_name}</strong></div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <span className="text-[10px] font-bold text-teal-600 uppercase font-mono">AI CLINICAL TRIAGE</span>
+                  <div className="font-bold text-slate-900">{opData.ai_triage.primary_condition}</div>
+                  <div className="text-[11px] text-slate-600">ICD-10: <code className="bg-slate-200 px-1 py-0.5 rounded">{opData.ai_triage.icd10}</code> · ESI Level {opData.ai_triage.esi_score}</div>
+                </div>
+
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <span className="text-[10px] font-bold text-rose-600 uppercase font-mono">DIGITAL PRESCRIPTION</span>
+                  <div className="font-bold text-slate-900">{opData.prescription.drug}</div>
+                  <div className="text-[11px] text-slate-600">{opData.prescription.instructions}</div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button onClick={() => {
+                  if(isVoiceSpeaking) {
+                    DhanviVoice.stop();
+                    setIsVoiceSpeaking(false);
+                  } else {
+                    const t = `అభినందనలు! మీ సూపర్ ఓపీ 10 నిమిషాల లోపు విజయవంతంగా పూర్తయింది. పేషెంట్ ${opData.appointment.patient_name} గారికి టోకెన్ నంబర్ ${opData.appointment.token_number} ఖరారు చేయబడింది. డాక్టర్ ${opData.appointment.doctor_name}, ${opData.appointment.hospital_name}. ఏఐ విశ్లేషణ: ${opData.ai_triage.primary_condition}. సూచించిన మందు: ${opData.prescription.drug}.`;
+                    setIsVoiceSpeaking(true);
+                    DhanviVoice.speak(t, () => setIsVoiceSpeaking(true), () => setIsVoiceSpeaking(false), "te-IN");
+                  }
+                }}
+                  className={`py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 border transition ${isVoiceSpeaking ? "bg-rose-500 text-white border-rose-600 animate-pulse" : "bg-teal-50 text-teal-800 border-teal-300 hover:bg-teal-100"}`}>
+                  <span>{isVoiceSpeaking ? "⏹ ఆపండి (Stop)" : "🔊 తెలుగు వాయిస్ సారాంశం (Listen)"}</span>
+                </button>
+                <button onClick={() => window.print()}
+                  className="flex-1 py-3 rounded-xl font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs flex items-center justify-center gap-1.5">
+                  <span>🖨️ Print Pass</span>
+                </button>
+                <button onClick={() => { DhanviVoice.stop(); setIsVoiceSpeaking(false); setPhase("input"); }}
+                  className="py-3 px-5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 text-xs">
+                  Start New
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── DHANVI AI VOICE ENGINE (Web Speech API) ────────────────────────────── */
+const DhanviVoice = {
+  isSupported: typeof window !== "undefined" && ("speechSynthesis" in window || "webkitSpeechRecognition" in window || "SpeechRecognition" in window),
+  speaking: false,
+  listening: false,
+  recognition: null,
+
+  speak(text, onStart, onEnd, lang = "te-IN") {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
+    window.speechSynthesis.cancel();
+
+    const cleanText = text
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/#{1,6}\s?/g, "")
+      .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+      .replace(/[•▸\-\*▸]\s/g, "")
+      .replace(/`/g, "")
+      .replace(/[🚨⚡🤖🏥💊🩸✓💡⚠️👨‍⚕️🧪]/g, "")
+      .trim();
+
+    if (!cleanText) return false;
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 0.92;
+    utterance.pitch = 1.0;
+
+    const hasTelugu = /[\u0c00-\u0c7f]/.test(cleanText) || (lang && lang.startsWith("te"));
+    const targetLang = hasTelugu ? "te-IN" : lang;
+    utterance.lang = targetLang;
+
+    const voices = window.speechSynthesis.getVoices();
+    let preferredVoice = null;
+    if (hasTelugu) {
+      preferredVoice = voices.find(v => 
+        (v.lang && (v.lang.toLowerCase().startsWith("te") || v.lang.toLowerCase().replace('_', '-').includes("te-in") || v.lang.toLowerCase().includes("telugu"))) ||
+        (v.name && v.name.toLowerCase().includes("telugu"))
+      );
+      // Note: If no local Telugu voice is found, do NOT fallback to an English voice.
+      // Keeping utterance.voice unset and utterance.lang='te-IN' allows Chrome, Edge, and Android
+      // to resolve their online Telugu TTS engine without speech synthesizer errors.
+    } else {
+      preferredVoice = voices.find(v => v.lang.includes("en-IN") || v.name.includes("India")) ||
+                       voices.find(v => v.lang.includes("en-GB") || v.name.includes("Natural") || v.name.includes("Google")) ||
+                       voices.find(v => v.lang.startsWith("en"));
+    }
+    if (preferredVoice) utterance.voice = preferredVoice;
+
+    utterance.onstart = () => {
+      this.speaking = true;
+      if (onStart) onStart();
+    };
+    utterance.onend = () => {
+      this.speaking = false;
+      if (onEnd) onEnd();
+    };
+    utterance.onerror = () => {
+      this.speaking = false;
+      if (onEnd) onEnd();
+    };
+
+    window.speechSynthesis.speak(utterance);
+    return true;
+  },
+
+  stop() {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    this.speaking = false;
+  },
+
+  startListening(onResult, onEnd, onError, lang = "te-IN") {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      if (onError) onError("Microphone voice recognition is not supported in this browser. Please use Chrome or Edge.");
+      return null;
+    }
+    this.stop();
+    try {
+      const rec = new SpeechRec();
+      rec.lang = lang;
+      rec.interimResults = true;
+      rec.continuous = false;
+      rec.maxAlternatives = 1;
+
+      rec.onstart = () => { this.listening = true; };
+      rec.onresult = (e) => {
+        const transcript = Array.from(e.results).map(r => r[0].transcript).join("");
+        const isFinal = e.results[0].isFinal;
+        if (onResult) onResult(transcript, isFinal);
+      };
+      rec.onerror = (err) => {
+        this.listening = false;
+        if (onError) onError(err.error || "Microphone error");
+      };
+      rec.onend = () => {
+        this.listening = false;
+        if (onEnd) onEnd();
+      };
+
+      rec.start();
+      this.recognition = rec;
+      return rec;
+    } catch(err) {
+      if (onError) onError(err.message);
+      return null;
+    }
+  },
+
+  stopListening() {
+    if (this.recognition) {
+      try { this.recognition.stop(); } catch(e){}
+    }
+    this.listening = false;
+  }
+};
+
+/* ═══════════════════════════════════════════════════════
+   CLINICAL AI COPILOT CHAT MODAL WITH BILINGUAL AI VOICE
+═══════════════════════════════════════════════════════ */
+function ClinicalAICopilotModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
+  const [language, setLanguage] = useState("te"); // Default to Telugu "te"
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content: "నమస్కారం! నేను **ధన్వి క్లినికల్ ఏఐ డాక్టర్ (DHANVI Clinical AI Copilot)**, డబ్ల్యూహెచ్ఓ (WHO) డిజిటల్ హెల్త్ మార్గదర్శకాల ప్రకారం పనిచేస్తున్నాను.\n\nమీ ఆరోగ్య సమస్య లేదా లక్షణాలను ఇక్కడ తెలుగులో టైప్ చేయండి లేదా 🎙️ **మైక్ బటన్** నొక్కి మాట్లాడండి. నేను తక్షణమే అత్యవసర సంకేతాలను విశ్లేషించి, సరైన స్పెషలిస్ట్ డాక్టర్‌ను మరియు 10-నిమిషాల సూపర్ ఓపీని సిఫార్సు చేస్తాను."
+    }
+  ]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [activeVoiceIndex, setActiveVoiceIndex] = useState(null);
+  const [voiceStatus, setVoiceStatus] = useState("");
+  const messagesEndRef = useRef(null);
+
+  const quickChipsEn = [
+    "Severe chest pain radiating to left arm",
+    "Fever for 3 days with chills & sore throat",
+    "Sudden dizziness & facial numbness",
+    "Burning stomach pain after meals",
+    "Check allergy safety for Penicillin"
+  ];
+
+  const quickChipsTe = [
+    "ఛాతీలో తీవ్రమైన నొప్పి & చెమటలు",
+    "3 రోజులుగా చలి జ్వరం & గొంతు నొప్పి",
+    "కళ్లు తిరగడం, తలనొప్పి & నీరసం",
+    "కడుపులో విపరీతమైన మంట & గ్యాస్",
+    "ఆయాసం & శ్వాస తీసుకోవడంలో కష్టం"
+  ];
+
+  const activeChips = language === "te" ? quickChipsTe : quickChipsEn;
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  // Clean up speech on unmount or close
+  useEffect(() => {
+    return () => {
+      DhanviVoice.stop();
+      DhanviVoice.stopListening();
+    };
+  }, []);
+
+  // Listen to auto-voice trigger
+  useEffect(() => {
+    const handleVoiceStart = () => {
+      toggleMic();
+    };
+    window.addEventListener("start_ai_voice", handleVoiceStart);
+    return () => window.removeEventListener("start_ai_voice", handleVoiceStart);
+  }, [language]);
+
+  function switchLanguage(newLang) {
+    if (newLang === language) return;
+    setLanguage(newLang);
+    DhanviVoice.stop();
+    setIsSpeaking(false);
+    setActiveVoiceIndex(null);
+
+    // If initial greeting is the only message, update it to the selected language
+    if (messages.length === 1 && messages[0].role === "assistant") {
+      if (newLang === "te") {
+        setMessages([{
+          role: "assistant",
+          content: "నమస్కారం! నేను **DHANVI క్లినికల్ ఏఐ డాక్టర్ (Clinical AI Copilot)**, డబ్ల్యూహెచ్ఓ (WHO) డిజిటల్ హెల్త్ ప్రమాణాల ప్రకారం పనిచేస్తాను.\n\nమీ ఆరోగ్య సమస్యలను ఇక్కడ టైప్ చేయవచ్చు లేదా **🎙️ మైక్రోఫోన్** నొక్కి తెలుగులో మాట్లాడవచ్చు. నేను అత్యవసర ప్రమాదాలను గుర్తించి, సరైన వైద్య నిపుణుడిని మరియు తదుపరి సంరక్షణను సూచిస్తాను."
+        }]);
+      } else {
+        setMessages([{
+          role: "assistant",
+          content: "Hello! I am **DHANVI Clinical AI Copilot**, adhering to WHO Digital Health Guidelines.\n\nDescribe your symptoms or questions by typing or tapping the **🎙️ microphone** to speak. I will assess clinical urgency, screen for emergency red flags, and guide you to the right specialist."
+        }]);
+      }
+    }
+  }
+
+  function toggleMic() {
+    if (isListening) {
+      DhanviVoice.stopListening();
+      setIsListening(false);
+      setVoiceStatus("");
+    } else {
+      DhanviVoice.stop();
+      setIsSpeaking(false);
+      setActiveVoiceIndex(null);
+      const listenMsg = language === "te"
+        ? "వింటున్నాను... మీ సమస్యను తెలుగులో స్పష్టంగా చెప్పండి"
+        : "Listening... Speak your symptoms clearly";
+      setVoiceStatus(listenMsg);
+      setIsListening(true);
+
+      const speechLang = language === "te" ? "te-IN" : "en-IN";
+      DhanviVoice.startListening(
+        (transcript, isFinal) => {
+          setInput(transcript);
+          setVoiceStatus(`"${transcript}"`);
+          if (isFinal && transcript.trim()) {
+            setIsListening(false);
+            setVoiceStatus("");
+            setTimeout(() => handleSend(transcript), 400);
+          }
+        },
+        () => {
+          setIsListening(false);
+          setVoiceStatus("");
+        },
+        (err) => {
+          setIsListening(false);
+          setVoiceStatus("Voice input error: " + err);
+          setTimeout(() => setVoiceStatus(""), 3500);
+        },
+        speechLang
+      );
+    }
+  }
+
+  function handleSpeakMessage(text, idx) {
+    if (isSpeaking && activeVoiceIndex === idx) {
+      DhanviVoice.stop();
+      setIsSpeaking(false);
+      setActiveVoiceIndex(null);
+    } else {
+      setActiveVoiceIndex(idx);
+      setIsSpeaking(true);
+      const speechLang = (language === "te" || /[\u0c00-\u0c7f]/.test(text)) ? "te-IN" : "en-IN";
+      DhanviVoice.speak(
+        text,
+        () => setIsSpeaking(true),
+        () => {
+          setIsSpeaking(false);
+          setActiveVoiceIndex(null);
+        },
+        speechLang
+      );
+    }
+  }
+
+  async function handleSend(textToSend) {
+    const text = (textToSend || input).trim();
+    if (!text || loading) return;
+
+    if (isListening) {
+      DhanviVoice.stopListening();
+      setIsListening(false);
+    }
+    DhanviVoice.stop();
+    setIsSpeaking(false);
+
+    // Auto-detect Telugu characters in input text
+    const isTeText = /[\u0c00-\u0c7f]/.test(text);
+    const activeLang = isTeText ? "te" : language;
+    if (isTeText && language !== "te") {
+      setLanguage("te");
+    }
+
+    const newMessages = [...messages, { role: "user", content: text }];
+    setMessages(newMessages);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          history: newMessages.slice(-5),
+          patient_id: "9876543210",
+          language: activeLang
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const replyText = data.reply;
+        const newIdx = newMessages.length;
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: replyText,
+          triage: data.triage
+        }]);
+
+        // Auto speak response if voice enabled
+        if (voiceEnabled) {
+          setActiveVoiceIndex(newIdx);
+          setIsSpeaking(true);
+          const speechLang = (activeLang === "te" || /[\u0c00-\u0c7f]/.test(replyText)) ? "te-IN" : "en-IN";
+          DhanviVoice.speak(
+            replyText,
+            () => setIsSpeaking(true),
+            () => {
+              setIsSpeaking(false);
+              setActiveVoiceIndex(null);
+            },
+            speechLang
+          );
+        }
+      } else {
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: language === "te"
+            ? "క్షమించండి, మీ ప్రశ్నను ప్రాసెస్ చేయడంలో లోపం ఎదురైంది. దయచేసి మళ్లీ ప్రయత్నించండి లేదా అత్యవసర సహాయం తీసుకోండి."
+            : "Sorry, I encountered an issue processing your clinical query. Please try again or seek direct emergency assistance."
+        }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "Error reaching Clinical AI Engine: " + err.message
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div className="relative w-full max-w-xl bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200 overflow-hidden h-[85vh] flex flex-col">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-teal-600 via-sky-700 to-indigo-800 text-white p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-2xl relative">
+              <span>🤖</span>
+              {isSpeaking && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-ping"></span>
+              )}
+            </div>
+            <div>
+              <h2 className="text-base font-black tracking-tight leading-none flex items-center gap-2">
+                <span>{language === "te" ? "DHANVI ఏఐ డాక్టర్ (AI Doctor)" : "DHANVI CLINICAL AI COPILOT"}</span>
+                <span className="text-[10px] bg-teal-400 text-slate-950 px-2 py-0.5 rounded-full font-bold">
+                  {language === "te" ? "తెలుగు వాయిస్" : "LIVE AI VOICE"}
+                </span>
+              </h2>
+              <p className="text-[11px] text-teal-100 mt-0.5">
+                {language === "te" ? "డబ్ల్యూహెచ్ఓ (WHO) ప్రమాణాలు · స్పీచ్ & క్లినికల్ ట్రయాజ్" : "WHO Digital Health Guidelines · Interactive Speech & Triage"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Language Switcher */}
+            <div className="flex items-center bg-black/25 p-0.5 rounded-xl border border-white/20 text-[10px] font-bold">
+              <button onClick={() => switchLanguage("en")}
+                className={`px-2 py-1 rounded-lg transition ${language === "en" ? "bg-white text-slate-900 shadow" : "text-white/80 hover:text-white"}`}>
+                EN
+              </button>
+              <button onClick={() => switchLanguage("te")}
+                className={`px-2 py-1 rounded-lg transition ${language === "te" ? "bg-teal-400 text-slate-950 shadow" : "text-white/80 hover:text-white"}`}>
+                తెలుగు
+              </button>
+            </div>
+
+            <button onClick={() => {
+                if (isSpeaking) { DhanviVoice.stop(); setIsSpeaking(false); }
+                setVoiceEnabled(!voiceEnabled);
+              }}
+              className={`px-2 py-1 rounded-xl text-[10px] font-bold transition flex items-center gap-1 border ${
+                voiceEnabled ? "bg-emerald-400/20 text-emerald-200 border-emerald-400/50" : "bg-white/10 text-white/60 border-white/20"
+              }`}>
+              <span>{voiceEnabled ? "🔊 ON" : "🔇 OFF"}</span>
+            </button>
+            <button onClick={() => { DhanviVoice.stop(); onClose(); }}
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center transition">✕</button>
+          </div>
+        </div>
+
+        {/* Messages List */}
+        <div className="p-4 overflow-y-auto flex-1 space-y-4 text-xs">
+          {messages.map((m, i) => {
+            const isUser = m.role === "user";
+            return (
+              <div key={i} className={"flex gap-2.5 " + (isUser ? "justify-end" : "justify-start")}>
+                {!isUser && <div className="w-7 h-7 rounded-full bg-teal-600 text-white font-bold flex items-center justify-center shrink-0 text-xs shadow">AI</div>}
+                <div className={"max-w-[85%] rounded-2xl p-3.5 space-y-2 " +
+                  (isUser ? "bg-teal-600 text-white rounded-tr-none" : "bg-slate-100 text-slate-800 rounded-tl-none border border-slate-200")}>
+                  <div className="whitespace-pre-line leading-relaxed font-sans">{m.content}</div>
+
+                  {!isUser && (
+                    <div className="flex items-center gap-2 pt-1">
+                      <button onClick={() => handleSpeakMessage(m.content, i)}
+                        className={`text-[10px] px-2 py-0.5 rounded-md font-bold transition flex items-center gap-1 border ${
+                          activeVoiceIndex === i && isSpeaking
+                            ? "bg-rose-100 text-rose-700 border-rose-300 animate-pulse"
+                            : "bg-white text-teal-700 border-slate-200 hover:border-teal-400"
+                        }`}>
+                        <span>
+                          {activeVoiceIndex === i && isSpeaking
+                            ? (language === "te" ? "⏹ ఆపండి (Stop)" : "⏹ Stop Speaking")
+                            : (language === "te" ? "🔊 వినిపించండి (Speak)" : "🔊 Read Aloud")}
+                        </span>
+                      </button>
+                    </div>
+                  )}
+
+                  {m.triage && (
+                    <div className="mt-2 pt-2 border-t border-slate-200/60 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[10px] uppercase text-teal-700">
+                          {language === "te" ? "ట్రయాజ్ స్థాయి:" : "Triage Level:"}
+                        </span>
+                        <span className={"px-2 py-0.5 rounded-full font-bold text-[10px] " +
+                          (m.triage.red_flag_alert ? "bg-rose-100 text-rose-700 border border-rose-300" :
+                           m.triage.urgency === "URGENT" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")}>
+                          {m.triage.urgency_badge}
+                        </span>
+                      </div>
+                      <div className="flex gap-2 pt-1">
+                        <button onClick={() => { DhanviVoice.stop(); onClose(); window.dispatchEvent(new CustomEvent("open_super_op")); }}
+                          className="flex-1 py-1.5 px-2 bg-gradient-to-r from-amber-500 to-rose-600 text-white rounded-lg font-bold text-[10px] shadow hover:scale-[1.02] transition">
+                          ⚡ {language === "te" ? "సూపర్ ఓపీ (10-Min Super OP)" : "Launch 10-Min Super OP"}
+                        </button>
+                        {m.triage.red_flag_alert && (
+                          <a href="tel:108"
+                            className="py-1.5 px-2 bg-rose-600 text-white rounded-lg font-bold text-[10px] flex items-center justify-center hover:bg-rose-500 transition">
+                            🚨 {language === "te" ? "108 అంబులెన్స్" : "Call 108"}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          {loading && (
+            <div className="flex gap-2.5 items-center text-slate-400 text-xs pl-2">
+              <div className="w-2 h-2 rounded-full bg-teal-500 animate-ping"></div>
+              <span>{language === "te" ? "ధన్వి ఏఐ లక్షణాలను విశ్లేషిస్తోంది..." : "Clinical AI analyzing symptoms..."}</span>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Sound Wave / Voice Status Indicator */}
+        {(isListening || isSpeaking || voiceStatus) && (
+          <div className="px-4 py-2 bg-slate-900 text-white flex items-center justify-between text-xs animate-fadeIn">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 h-4">
+                <span className="w-1 bg-emerald-400 rounded-full animate-bounce h-2"></span>
+                <span className="w-1 bg-teal-300 rounded-full animate-bounce h-4 delay-75"></span>
+                <span className="w-1 bg-sky-400 rounded-full animate-bounce h-3 delay-150"></span>
+                <span className="w-1 bg-teal-400 rounded-full animate-bounce h-5 delay-100"></span>
+                <span className="w-1 bg-emerald-300 rounded-full animate-bounce h-2 delay-200"></span>
+              </div>
+              <span className="font-semibold text-[11px] text-teal-200">
+                {isListening
+                  ? (voiceStatus || (language === "te" ? "మీ మాటలను వింటున్నాను... చెప్పండి" : "Listening to your voice... Speak now"))
+                  : (language === "te" ? "ధన్వి ఏఐ డాక్టర్ మాట్లాడుతున్నారు..." : "AI Doctor Speaking...")}
+              </span>
+            </div>
+            {isSpeaking && (
+              <button onClick={() => { DhanviVoice.stop(); setIsSpeaking(false); setActiveVoiceIndex(null); }}
+                className="text-[10px] px-2 py-0.5 rounded bg-rose-500/30 text-rose-300 border border-rose-400/40 font-bold hover:bg-rose-500/50">
+                ⏹ {language === "te" ? "ఆపండి" : "Stop"}
+              </button>
+            )}
+            {isListening && (
+              <button onClick={toggleMic}
+                className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 font-bold hover:bg-emerald-500/50">
+                ✓ {language === "te" ? "పూర్తయింది" : "Done Speaking"}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Quick Chips */}
+        <div className="px-4 py-2 bg-slate-50 border-t border-slate-200 flex gap-1.5 overflow-x-auto text-[11px]">
+          {activeChips.map((c, i) => (
+            <button key={i} onClick={() => handleSend(c)}
+              className="whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-teal-400 hover:text-teal-600 transition shrink-0">
+              💡 {c}
+            </button>
+          ))}
+        </div>
+
+        {/* Input Form with Speech-To-Text Mic */}
+        <form onSubmit={e => { e.preventDefault(); handleSend(); }} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
+          <button type="button" onClick={toggleMic}
+            className={`p-2.5 rounded-xl text-base transition flex items-center justify-center shrink-0 border ${
+              isListening
+                ? "bg-rose-600 text-white animate-pulse border-rose-600 shadow-lg shadow-rose-500/40"
+                : "bg-slate-100 hover:bg-teal-50 text-teal-700 hover:border-teal-400 border-slate-300"
+            }`}
+            title={isListening ? "Stop listening" : (language === "te" ? "తెలుగు వాయిస్ మైక్ (వాయిస్ ద్వారా చెప్పండి)" : "Speak your symptoms (AI Voice Input)")}>
+            {isListening ? "⏹️" : "🎙️"}
+          </button>
+
+          <input type="text" value={input} onChange={e => setInput(e.target.value)}
+            placeholder={
+              isListening
+                ? (language === "te" ? "మీ మాటలను వింటున్నాను..." : "Listening to your voice...")
+                : (language === "te" ? "మీ ఆరోగ్య సమస్యను తెలుగులో టైప్ చేయండి లేదా 🎙️ నొక్కి మాట్లాడండి..." : "Type or click 🎙️ to speak your health concern...")
+            }
+            className="flex-1 text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500" />
+
+          <button type="submit" disabled={!input.trim() || loading}
+            className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs transition disabled:opacity-40 shrink-0">
+            {language === "te" ? "పంపండి →" : "Send →"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   ROOT APP
+═══════════════════════════════════════════════════════ */
+function App() {
+  const [page, setPage] = useState("home");
+  const [theme, setTheme] = useState(() => localStorage.getItem("dhanvi_theme") || "classic");
+  const [superOpOpen, setSuperOpOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
+
+  // scroll to top on page change
+  useEffect(() => { window.scrollTo({ top:0, behavior:'smooth' }); }, [page]);
+
+  // sync theme class to body
+  useEffect(() => {
+    localStorage.setItem("dhanvi_theme", theme);
+    if (theme === "classic") {
+      document.body.classList.add("theme-classic");
+      document.body.classList.remove("theme-dark");
+    } else {
+      document.body.classList.add("theme-dark");
+      document.body.classList.remove("theme-classic");
+    }
+  }, [theme]);
+
+  // Listen to open events
+  useEffect(() => {
+    const openSO = () => setSuperOpOpen(true);
+    const openAI = () => setAiChatOpen(true);
+    window.addEventListener("open_super_op", openSO);
+    window.addEventListener("open_ai_chat", openAI);
+    return () => {
+      window.removeEventListener("open_super_op", openSO);
+      window.removeEventListener("open_ai_chat", openAI);
+    };
+  }, []);
+
+  const pages = {
+    home:       <HomePage setPage={setPage} />,
+    features:   <FeaturesPage setPage={setPage} />,
+    demo:       <DemoPage />,
+    card:       <CardPage />,
+    compliance: <CompliancePage />,
+    about:      <AboutPage setPage={setPage} />,
+  };
+
+  return (
+    <div>
+      <Navbar activePage={page} setPage={setPage} theme={theme} setTheme={setTheme} />
+      <div>{pages[page] || pages.home}</div>
+      <Footer setPage={setPage} />
+
+      {/* Floating Quick Action Bar */}
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2.5">
+        <button onClick={() => setSuperOpOpen(true)}
+          className="px-5 py-3 rounded-2xl text-xs font-black text-white bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 shadow-2xl shadow-rose-500/30 hover:scale-105 active:scale-95 transition flex items-center gap-2 border border-white/20 animate-bounce">
+          <span className="text-base">⚡</span>
+          <span>SUPER OP (10-Min Care)</span>
+        </button>
+
+        <button onClick={() => { setAiChatOpen(true); setTimeout(() => window.dispatchEvent(new CustomEvent("start_ai_voice")), 300); }}
+          className="px-4 py-2.5 rounded-2xl text-xs font-black text-white bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-700 shadow-xl shadow-teal-500/30 hover:scale-105 active:scale-95 transition flex items-center gap-2 border border-white/20">
+          <span className="text-base">🎙️</span>
+          <span>తెలుగు AI డాక్టర్ వాయిస్ (TELUGU AI VOICE)</span>
+        </button>
+
+        <button onClick={() => setAiChatOpen(true)}
+          className="px-4 py-2 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-teal-600 to-sky-700 shadow-lg hover:scale-105 active:scale-95 transition flex items-center gap-2 border border-white/20">
+          <span className="text-base">🤖</span>
+          <span>Clinical AI Chat</span>
+        </button>
+      </div>
+
+      <SuperOPModal isOpen={superOpOpen} onClose={() => setSuperOpOpen(false)} />
+      <ClinicalAICopilotModal isOpen={aiChatOpen} onClose={() => setAiChatOpen(false)} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

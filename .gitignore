@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Binaries and large executables
+cloudflared.exe
+*.exe
+*.dll
+
+# Browser automation profiles and temp data
+chrome_test_profile/
+*.log
+
+# Temporary inspection dumps
+components_dump.txt
+lines_out.txt
+new_admin_dashboard.txt
+new_website_modal.txt
+telugu_reply.txt
+
+# Local scratch
+scratch/
+.system_generated/
