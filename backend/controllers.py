@@ -234,6 +234,8 @@ class AuthController:
                 p_row = conn.execute("SELECT * FROM patients WHERE user_id = ?", (actual_uid,)).fetchone()
                 if p_row:
                     role_data.update(dict(p_row))
+            elif role == "admin":
+                role_data["name"] = "System Administrator"
 
             token = SecurityEngine.create_jwt_token({
                 "user_id": actual_uid,
