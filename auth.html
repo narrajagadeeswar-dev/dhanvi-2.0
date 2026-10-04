@@ -3827,16 +3827,18 @@ function DoctorDashboard({user, onLogout}){
                         </button>
                       )}
                       {a.status === "IN_PROGRESS" && (
-                        <button onClick={()=>readPatientSummary(a)}
-                          className={`px-2.5 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1 ${
-                            docVoiceSpeakingId === a.id ? "bg-rose-950 text-rose-300 border-rose-500/50 animate-pulse" : "bg-slate-900 text-slate-300 border-slate-700 hover:border-teal-400"
-                          }`} title="Read patient vitals aloud">
-                          <span>{docVoiceSpeakingId === a.id ? "⏹ Stop" : "🔊 Read"}</span>
-                        </button>
-                        <button onClick={()=>updateStatus(a.id, "COMPLETED")}
-                          className="px-3 py-2 rounded-xl text-xs font-black bg-emerald-500 text-slate-900 hover:bg-emerald-400 transition">
-                          ✓ Mark Complete
-                        </button>
+                        <>
+                          <button onClick={()=>readPatientSummary(a)}
+                            className={`px-2.5 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1 ${
+                              docVoiceSpeakingId === a.id ? "bg-rose-950 text-rose-300 border-rose-500/50 animate-pulse" : "bg-slate-900 text-slate-300 border-slate-700 hover:border-teal-400"
+                            }`} title="Read patient vitals aloud">
+                            <span>{docVoiceSpeakingId === a.id ? "⏹ Stop" : "🔊 Read"}</span>
+                          </button>
+                          <button onClick={()=>updateStatus(a.id, "COMPLETED")}
+                            className="px-3 py-2 rounded-xl text-xs font-black bg-emerald-500 text-slate-900 hover:bg-emerald-400 transition">
+                            ✓ Mark Complete
+                          </button>
+                        </>
                       )}
                       <button onClick={()=>{ setRxForm(f=>({...f, patient_id: a.patient_id})); setTab("rx"); }}
                         className="px-3 py-2 rounded-xl text-xs font-bold border border-teal-500/40 text-teal-400 hover:bg-teal-500/10 transition">
